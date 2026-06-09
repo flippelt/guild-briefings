@@ -7,6 +7,16 @@ PWA, React + Vite.
 É o equivalente fantasia do conceito de "mission briefings" do Lancer, mas um
 projeto próprio (do zero) e voltado a D&D 5e e afins.
 
+> **Inspirado no [Lancer Briefings](https://github.com/Kuenaimaku/lancer-briefings)**
+> (Kuenaimaku) — a ideia de um briefing diegético pra mostrar aos jogadores na
+> mesa vem de lá. Este projeto é uma releitura própria pra fantasia, escrita do
+> zero (não é fork), com import de fichas do D&D Beyond.
+
+## Demo
+
+Página de demonstração (party fictícia) no GitHub Pages:
+**https://flippelt.github.io/guild-briefings/**
+
 ## Como funciona
 
 Os personagens entram de duas formas:

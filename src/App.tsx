@@ -1,7 +1,20 @@
+import type { BriefingCharacter } from './types'
 import { useParty } from './store/party'
 import { CharacterCard } from './components/CharacterCard'
 import { ImportPanel } from './components/ImportPanel'
 import { ManualAddForm } from './components/ManualAddForm'
+
+/** Baixa a party como `party.json` — solte esse arquivo em `public/` de um
+ *  deploy privado pra "semear" a party automaticamente. */
+function exportParty(party: BriefingCharacter[]) {
+  const blob = new Blob([JSON.stringify(party, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'party.json'
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
 export function App() {
   const { party, add, update, remove, clear } = useParty()
@@ -36,14 +49,19 @@ export function App() {
           </div>
           <footer className="app__footer">
             <span className="muted">{party.length} aventureiro(s)</span>
-            <button
-              className="ghost danger"
-              onClick={() => {
-                if (confirm('Limpar todo o dossiê?')) clear()
-              }}
-            >
-              limpar dossiê
-            </button>
+            <div className="row">
+              <button className="ghost" onClick={() => exportParty(party)} title="Baixar party.json">
+                exportar dossiê
+              </button>
+              <button
+                className="ghost danger"
+                onClick={() => {
+                  if (confirm('Limpar todo o dossiê?')) clear()
+                }}
+              >
+                limpar dossiê
+              </button>
+            </div>
           </footer>
         </>
       )}
