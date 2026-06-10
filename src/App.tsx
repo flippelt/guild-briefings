@@ -36,6 +36,7 @@ export function App() {
     return (
       <BootScreen
         crest={b.briefing.crest}
+        title={b.briefing.bootTitle}
         onDone={() => {
           sessionStorage.setItem('guild.booted', '1')
           setBooted(true)

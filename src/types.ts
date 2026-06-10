@@ -112,6 +112,8 @@ export interface Briefing {
   guildName?: string
   /** Brasão exibido no topo: flor-de-lis (padrão) ou d20. */
   crest?: 'fleur' | 'd20'
+  /** Título exibido no boot (padrão "GUILD BRIEFINGS"). */
+  bootTitle?: string
 }
 
 export const EMPTY_BRIEFING: Briefing = { party: [], parties: [], quests: [], recaps: [] }

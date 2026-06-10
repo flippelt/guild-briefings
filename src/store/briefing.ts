@@ -67,7 +67,8 @@ export function normalizeBriefing(data: unknown): Briefing {
     : []
   const guildName = typeof obj.guildName === 'string' ? obj.guildName : undefined
   const crest = obj.crest === 'd20' ? 'd20' : undefined
-  return { party, parties, quests, recaps, ...(guildName ? { guildName } : {}), ...(crest ? { crest } : {}) }
+  const bootTitle = typeof obj.bootTitle === 'string' && obj.bootTitle.trim() ? obj.bootTitle.trim() : undefined
+  return { party, parties, quests, recaps, ...(guildName ? { guildName } : {}), ...(crest ? { crest } : {}), ...(bootTitle ? { bootTitle } : {}) }
 }
 
 function load(): Briefing {
