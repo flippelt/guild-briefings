@@ -27,23 +27,6 @@
           values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -8 7" result="grain" />
         <feComposite in="SourceGraphic" in2="grain" operator="in" />
       </filter>
-      <!-- Bevel escuro do selo: quina iluminada (specular) + sombra interna escura
-           na quina oposta → letras chanfradas e fundas na cera, legíveis -->
-      <filter id="waxBevel" x="-25%" y="-25%" width="150%" height="150%">
-        <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="blur" />
-        <feSpecularLighting in="blur" surfaceScale="3" specularConstant="0.7" specularExponent="18" lighting-color="#eaa877" result="spec">
-          <feDistantLight azimuth="235" elevation="58" />
-        </feSpecularLighting>
-        <feComposite in="spec" in2="SourceAlpha" operator="in" result="specClip" />
-        <feOffset in="SourceAlpha" dx="0.5" dy="0.6" result="dn" />
-        <feFlood flood-color="#1c0502" flood-opacity="0.85" result="dcol" />
-        <feComposite in="dcol" in2="dn" operator="in" result="dark" />
-        <feMerge>
-          <feMergeNode in="dark" />
-          <feMergeNode in="SourceGraphic" />
-          <feMergeNode in="specClip" />
-        </feMerge>
-      </filter>
     </svg>
     <script type="module" src="/src/main.tsx"></script>
   </body>
