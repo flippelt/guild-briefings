@@ -10,9 +10,8 @@ import { QuestModal } from '../components/QuestModal'
 export function StatusView({ briefing }: { briefing: Briefing }) {
   const { party, parties, quests } = briefing
   const [openId, setOpenId] = useState<string | null>(null)
-  const ordered = [...quests].sort(
-    (a, b) => Number(a.status === 'concluida') - Number(b.status === 'concluida'),
-  )
+  const done = (s: string) => s === 'concluida' || s === 'parcial'
+  const ordered = [...quests].sort((a, b) => Number(done(a.status)) - Number(done(b.status)))
   const open = quests.find((q) => q.id === openId) ?? null
 
   return (
@@ -41,7 +40,9 @@ export function StatusView({ briefing }: { briefing: Briefing }) {
                   {who && <p className="note__who">⚔ {who}</p>}
                   {q.reward && <p className="note__reward">✦ {q.reward}</p>}
                   {q.status === 'pausada' && <span className="note__stamp note__stamp--hold">em espera</span>}
-                  {q.status === 'concluida' && <QuestStamp seed={q.id} />}
+                  {(q.status === 'concluida' || q.status === 'parcial') && (
+                    <QuestStamp seed={q.id} status={q.status} />
+                  )}
                 </article>
               )
             })}

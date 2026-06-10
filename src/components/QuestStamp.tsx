@@ -7,10 +7,22 @@ import { guildForSeed } from '../guilds'
  * cima, o lema no de baixo) → simétricos por construção. "CONCLUÍDA" centrado
  * exatamente em (50,50). Tinta com falhas leves (#stampInk).
  */
-export function QuestStamp({ seed = '' }: { seed?: string }) {
+export function QuestStamp({
+  seed = '',
+  status = 'concluida',
+}: {
+  seed?: string
+  status?: 'concluida' | 'parcial'
+}) {
   const { guild } = guildForSeed(seed)
+  const label = status === 'parcial' ? 'PARCIAL' : 'CONCLUÍDA'
   return (
-    <svg className="qstamp" viewBox="0 0 100 100" role="img" aria-label={`Concluída — ${guild.name}`}>
+    <svg
+      className={`qstamp${status === 'parcial' ? ' qstamp--parcial' : ''}`}
+      viewBox="0 0 100 100"
+      role="img"
+      aria-label={`${label} — ${guild.name}`}
+    >
       <defs>
         <path id="qst-top" d="M 11.5,50 A 38.5,38.5 0 0 1 88.5,50" />
         <path id="qst-bot" d="M 11.5,50 A 38.5,38.5 0 0 0 88.5,50" />
@@ -28,7 +40,7 @@ export function QuestStamp({ seed = '' }: { seed?: string }) {
         <text className="qstamp__star" x="88.5" y="50">★</text>
         <line className="qstamp__bar" x1="18" y1="44" x2="82" y2="44" />
         <line className="qstamp__bar" x1="18" y1="56" x2="82" y2="56" />
-        <text className="qstamp__label" x="50" y="50">CONCLUÍDA</text>
+        <text className="qstamp__label" x="50" y="50">{label}</text>
       </g>
     </svg>
   )

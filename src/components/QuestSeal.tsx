@@ -8,10 +8,21 @@ import { guildForSeed } from '../guilds'
  * "CONCLUÍDA" exatamente no centro, dentro do anel interno. Vai no rodapé do
  * pergaminho da quest aberta. Guilda/forma variam pelo seed (id da quest).
  */
-export function QuestSeal({ seed = '' }: { seed?: string }) {
+export function QuestSeal({
+  seed = '',
+  status = 'concluida',
+}: {
+  seed?: string
+  status?: 'concluida' | 'parcial'
+}) {
   const { guild, variant } = guildForSeed(seed)
+  const label = status === 'parcial' ? 'PARCIAL' : 'CONCLUÍDA'
   return (
-    <span className={`quest-seal wax--${variant}`} role="img" aria-label={`Concluída — ${guild.name}`}>
+    <span
+      className={`quest-seal wax--${variant}${status === 'parcial' ? ' quest-seal--parcial' : ''}`}
+      role="img"
+      aria-label={`${label} — ${guild.name}`}
+    >
       <span className="wax__blob" />
       <svg className="wax__stamp" viewBox="0 0 120 120" aria-hidden="true">
         <defs>
@@ -29,7 +40,7 @@ export function QuestSeal({ seed = '' }: { seed?: string }) {
           </text>
           <text className="wax__fleur" x="13" y="60">✦</text>
           <text className="wax__fleur" x="107" y="60">✦</text>
-          <text className="wax__label" x="60" y="60">CONCLUÍDA</text>
+          <text className="wax__label" x="60" y="60">{label}</text>
         </g>
       </svg>
     </span>

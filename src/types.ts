@@ -65,7 +65,7 @@ export interface Party {
 
 // ---------- Quests ----------
 
-export type QuestStatus = 'ativa' | 'pausada' | 'concluida'
+export type QuestStatus = 'ativa' | 'pausada' | 'parcial' | 'concluida'
 
 export interface Quest {
   id: string
@@ -85,10 +85,11 @@ export interface Quest {
 export const QUEST_STATUS_LABEL: Record<QuestStatus, string> = {
   ativa: 'Ativa',
   pausada: 'Em espera',
+  parcial: 'Parcial',
   concluida: 'Concluída',
 }
 
-export const QUEST_STATUSES: QuestStatus[] = ['ativa', 'pausada', 'concluida']
+export const QUEST_STATUSES: QuestStatus[] = ['ativa', 'pausada', 'parcial', 'concluida']
 
 // ---------- Crônicas / recontagens ----------
 
