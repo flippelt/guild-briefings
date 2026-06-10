@@ -120,11 +120,12 @@ body {
   gap: 14px; text-align: center; cursor: pointer;
   background: radial-gradient(60% 60% at 50% 40%, #1c130b, #0a0705);
 }
-.boot__sigil { font-size: 4rem; color: var(--gold); filter: drop-shadow(0 0 10px rgba(224, 150, 70, 0.35)); animation: pulse 3s ease-in-out infinite; }
+.boot__sigil { font-size: 4rem; color: var(--gold); filter: drop-shadow(0 0 10px rgba(224, 150, 70, 0.35)); animation: pulse 3s ease-in-out infinite; line-height: 1; }
+.boot__sigil svg { width: 1em; height: 1em; display: block; }
 @keyframes pulse { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
 .boot__title { font-family: var(--display); letter-spacing: 0.32em; font-size: clamp(1.4rem, 4vw, 2.4rem); color: var(--gold-bright); margin: 0; }
 .boot__lines {
-  font-family: var(--script); min-height: 4.5em;
+  font-family: 'Bilbo Swash Caps', var(--script); min-height: 4.5em;
   display: flex; flex-direction: column; align-items: center; gap: 0.1em;
 }
 .boot__line {
@@ -187,6 +188,7 @@ body {
 }
 .tab:hover { color: var(--ink); }
 .tab__sigil { color: var(--gold); opacity: 0.7; }
+.tab__sigil svg { width: 1em; height: 1em; display: inline-block; vertical-align: -0.12em; }
 .tab--on { color: var(--gold-bright); }
 .tab--on .tab__sigil { opacity: 1; }
 .tab--on::after {

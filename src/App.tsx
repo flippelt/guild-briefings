@@ -35,6 +35,7 @@ export function App() {
   if (!booted) {
     return (
       <BootScreen
+        crest={b.briefing.crest}
         onDone={() => {
           sessionStorage.setItem('guild.booted', '1')
           setBooted(true)
@@ -85,7 +86,9 @@ export function App() {
             className={'tab' + (tab === t.id ? ' tab--on' : '')}
             onClick={() => setTab(t.id)}
           >
-            <span className="tab__sigil" aria-hidden="true">{t.sigil}</span>
+            <span className="tab__sigil" aria-hidden="true">
+              {t.id === 'status' && briefing.crest === 'd20' ? <D20Icon /> : t.sigil}
+            </span>
             <span className="tab__label">{t.label}</span>
           </button>
         ))}
