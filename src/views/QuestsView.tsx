@@ -55,7 +55,7 @@ export function QuestsView({
           </div>
           {others.length > 0 && (
             <>
-              <h2 className="section-label">Em espera / concluídas ({others.length})</h2>
+              <h2 className="section-label">Em espera / parciais / concluídas ({others.length})</h2>
               <div className="cards">
                 {others.map((q) => <QuestCard key={q.id} q={q} parties={parties} party={party} onUpdate={(p) => onUpdate(q.id, p)} onRemove={() => onRemove(q.id)} />)}
               </div>

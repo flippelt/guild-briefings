@@ -296,6 +296,7 @@ body {
 }
 .badge--ativa { color: var(--ember); }
 .badge--pausada { color: var(--ink-dim); }
+.badge--parcial { color: var(--gold); }
 .badge--concluida { color: var(--green); }
 
 /* ============ Crônicas / recaps ============ */
@@ -373,6 +374,12 @@ body {
 .note--concluida { filter: saturate(0.85) brightness(0.95); }
 .note--concluida .note__title { text-decoration: line-through; text-decoration-color: rgba(138, 51, 36, 0.55); }
 .note--concluida .note__obj, .note--concluida .note__reward { opacity: 0.7; }
+.note--parcial { filter: saturate(0.92) brightness(0.97); }
+.note--parcial .note__title {
+  text-decoration: underline; text-decoration-style: dotted;
+  text-decoration-color: rgba(154, 106, 28, 0.65);
+}
+.note--parcial .note__obj, .note--parcial .note__reward { opacity: 0.82; }
 
 /* tachinha de latão no topo do bilhete/etiqueta */
 .note__pin, .namecard__pin {
@@ -458,6 +465,7 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 .quest--pausada { border-left-color: var(--parch-line); }
 .quest--concluida { border-left-color: #5f8a44; }
 .badge--pausada { color: var(--parch-dim); }
+.badge--parcial { color: var(--sepia); }
 .badge--concluida { color: #4f7a3a; }
 
 /* Campos em edição dentro de superfícies de pergaminho: papel claro. */
@@ -566,6 +574,17 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 .wax--4 .wax__blob { border-radius: 52% 48% 45% 55% / 49% 53% 47% 51%; }
 .wax--5 .wax__blob { border-radius: 56% 44% 53% 47% / 45% 55% 48% 52%; }
 .wax--6 .wax__blob { border-radius: 47% 53% 54% 46% / 52% 47% 53% 48%; }
+/* Parcial: cera bronze/âmbar (em vez do vermelho), gravação bronze escuro */
+.quest-seal--parcial .wax__blob {
+  background:
+    radial-gradient(ellipse 55% 42% at 38% 30%, rgba(255, 232, 188, 0.5), rgba(255, 232, 188, 0) 55%),
+    radial-gradient(circle at 52% 48%, #c98a3a 0%, #9c6a1c 60%, #6e4810 100%);
+}
+.quest-seal--parcial .wax__ring,
+.quest-seal--parcial .wax__motto,
+.quest-seal--parcial .wax__label,
+.quest-seal--parcial .wax__fleur { fill: #4a3008; }
+.quest-seal--parcial .wax__ring2 { stroke: #4a3008; }
 
 /* ============ Carimbo de tinta do Salão (selo de borracha) ============ */
 .note__open { position: absolute; inset: 0; z-index: 3; background: none; border: none; padding: 0; margin: 0; cursor: pointer; }
@@ -588,6 +607,9 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
   font-family: 'Cinzel', Georgia, serif; font-weight: 700; font-size: 10px; letter-spacing: 0.2px;
   fill: var(--oxblood); text-anchor: middle; dominant-baseline: central;
 }
+/* Parcial: tinta sépia/âmbar (em vez do vermelho oxblood) */
+.qstamp--parcial .qstamp__ring, .qstamp--parcial .qstamp__bar { stroke: #9a6a1c; }
+.qstamp--parcial .qstamp__arc, .qstamp--parcial .qstamp__star, .qstamp--parcial .qstamp__label { fill: #9a6a1c; }
 
 /* ============ Quest aberta (pergaminho do contrato) ============ */
 .quest-detail { padding: 30px 22px 22px; text-align: left; }

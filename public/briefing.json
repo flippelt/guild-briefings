@@ -82,6 +82,14 @@
       "status": "concluida",
       "partyId": "p-laminas",
       "reward": "150 po (pagos) + 3 barris do melhor tinto"
+    },
+    {
+      "id": "demo-q5",
+      "title": "A Ponte de Pedra Cinza",
+      "objective": "Conter os saqueadores na ponte e proteger os mercadores — alguns vagões se perderam.",
+      "status": "parcial",
+      "partyId": "p-selo",
+      "reward": "80 po (parcial) + favor do capitão da guarda"
     }
   ],
   "recaps": [
