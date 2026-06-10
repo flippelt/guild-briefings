@@ -23,6 +23,10 @@ export interface BriefingCharacter {
   avatarUrl?: string
   /** Jogador (pessoa real), opcional. */
   player?: string
+  /** Party/equipe a que pertence (id em Briefing.parties). */
+  partyId?: string
+  /** História/background do personagem (mostrada ao abrir o cartaz). */
+  backstory?: string
   notes?: string
   /** De onde veio: import do DDB ou entrada manual. */
   source: 'ddb' | 'manual'
@@ -50,4 +54,81 @@ export function classLine(classes: CharacterClass[]): string {
   return classes
     .map((c) => `${c.name}${c.subclass ? ` (${c.subclass})` : ''} ${c.level}`)
     .join(' / ')
+}
+
+// ---------- Parties / equipes ----------
+
+export interface Party {
+  id: string
+  name: string
+}
+
+// ---------- Quests ----------
+
+export type QuestStatus = 'ativa' | 'pausada' | 'concluida'
+
+export interface Quest {
+  id: string
+  title: string
+  /** Objetivo/descrição curta. */
+  objective?: string
+  status: QuestStatus
+  /** Recompensa prometida. */
+  reward?: string
+  /** Party encarregada (id em Briefing.parties) — mostra o nome da equipe. */
+  partyId?: string
+  /** Aventureiros avulsos encarregados (ids) — quando não é uma party. */
+  adventurerIds?: string[]
+  notes?: string
+}
+
+export const QUEST_STATUS_LABEL: Record<QuestStatus, string> = {
+  ativa: 'Ativa',
+  pausada: 'Em espera',
+  concluida: 'Concluída',
+}
+
+export const QUEST_STATUSES: QuestStatus[] = ['ativa', 'pausada', 'concluida']
+
+// ---------- Crônicas / recontagens ----------
+
+export interface Recap {
+  id: string
+  title: string
+  /** Data/sessão (texto livre: "Sessão 12" ou "14 Mirtul"). */
+  date?: string
+  body: string
+}
+
+// ---------- Briefing (bundle persistido / seed) ----------
+
+export interface Briefing {
+  party: BriefingCharacter[]
+  parties: Party[]
+  quests: Quest[]
+  recaps: Recap[]
+  /** Nome da companhia/guilda (cabeçalho). */
+  guildName?: string
+}
+
+export const EMPTY_BRIEFING: Briefing = { party: [], parties: [], quests: [], recaps: [] }
+
+/** Texto de quem está encarregado de uma quest: nome da party, ou nomes dos
+ *  aventureiros avulsos. Vazio se ninguém atribuído. */
+export function questAssignee(
+  q: Quest,
+  parties: Party[],
+  party: BriefingCharacter[],
+): string {
+  if (q.partyId) {
+    const p = parties.find((x) => x.id === q.partyId)
+    if (p) return p.name
+  }
+  if (q.adventurerIds && q.adventurerIds.length > 0) {
+    const names = q.adventurerIds
+      .map((id) => party.find((c) => c.id === id)?.name)
+      .filter((n): n is string => !!n)
+    if (names.length > 0) return names.join(', ')
+  }
+  return ''
 }

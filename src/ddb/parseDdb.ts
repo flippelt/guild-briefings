@@ -137,6 +137,10 @@ export function parseDdbCharacter(raw: unknown): BriefingCharacter {
   const decorations = (c.decorations ?? {}) as Record<string, unknown>
   const avatarUrl = typeof decorations.avatarUrl === 'string' ? decorations.avatarUrl : undefined
 
+  const notes = (c.notes ?? {}) as Record<string, unknown>
+  const backstory =
+    typeof notes.backstory === 'string' && notes.backstory.trim() ? notes.backstory.trim() : undefined
+
   return {
     id: newId(),
     name,
@@ -147,6 +151,7 @@ export function parseDdbCharacter(raw: unknown): BriefingCharacter {
     ...(hp !== undefined ? { hp } : {}),
     ...(maxHp !== undefined ? { maxHp } : {}),
     ...(avatarUrl ? { avatarUrl } : {}),
+    ...(backstory ? { backstory } : {}),
     source: 'ddb',
   }
 }

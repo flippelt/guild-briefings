@@ -1,22 +1,40 @@
 import { useState } from 'react'
 import type { BriefingCharacter } from '../types'
 import { parseDdbJson } from '../ddb/parseDdb'
+import { fetchDdbCharacter } from '../ddb/fetchDdb'
 
 /**
- * Import por JSON colado do D&D Beyond. Sem fetch (evita CORS/ToS): o usuário
- * abre o JSON público do personagem e cola aqui.
+ * Import do D&D Beyond: cola-se o LINK do personagem (público) e o app busca o
+ * JSON (direto / função do Netlify / proxy). "Colar JSON" fica como fallback.
  */
 export function ImportPanel({ onImport }: { onImport: (c: BriefingCharacter) => void }) {
-  const [text, setText] = useState('')
+  const [link, setLink] = useState('')
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [paste, setPaste] = useState('')
+  const [pasteError, setPasteError] = useState<string | null>(null)
 
-  const importNow = () => {
+  const fetchNow = async () => {
+    if (!link.trim() || loading) return
     setError(null)
+    setLoading(true)
     try {
-      onImport(parseDdbJson(text))
-      setText('')
+      onImport(await fetchDdbCharacter(link))
+      setLink('')
     } catch (e) {
       setError((e as Error).message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const importPaste = () => {
+    setPasteError(null)
+    try {
+      onImport(parseDdbJson(paste))
+      setPaste('')
+    } catch (e) {
+      setPasteError((e as Error).message)
     }
   }
 
@@ -25,22 +43,40 @@ export function ImportPanel({ onImport }: { onImport: (c: BriefingCharacter) => 
       <summary>Importar do D&amp;D Beyond</summary>
       <div className="panel__body">
         <p className="muted">
-          Abra o personagem (precisa estar <strong>público</strong>) em
-          {' '}
-          <code>character-service.dndbeyond.com/character/v5/character/&lt;ID&gt;</code>, copie todo
-          o JSON e cole abaixo. O ID está na URL da ficha no D&amp;D Beyond.
+          Cole o <strong>link do personagem</strong> (precisa estar <strong>público</strong>) e
+          busque a ficha. Ex.: <code>dndbeyond.com/characters/123456789</code>
         </p>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder='Cole o JSON do personagem aqui…'
-          rows={6}
-          spellCheck={false}
-        />
         <div className="row">
-          <button onClick={importNow} disabled={!text.trim()}>Importar</button>
-          {error && <span className="error">{error}</span>}
+          <input
+            type="text"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && fetchNow()}
+            placeholder="https://www.dndbeyond.com/characters/…"
+            style={{ flex: 1, minWidth: 180 }}
+          />
+          <button onClick={fetchNow} disabled={loading || !link.trim()}>
+            {loading ? 'Buscando…' : 'Buscar'}
+          </button>
         </div>
+        {error && <span className="error">{error}</span>}
+
+        <details className="subpanel">
+          <summary>ou colar o JSON manualmente</summary>
+          <div className="subpanel__body">
+            <textarea
+              value={paste}
+              onChange={(e) => setPaste(e.target.value)}
+              placeholder='Cole o JSON do personagem (ex.: {"name":"…",…})'
+              rows={5}
+              spellCheck={false}
+            />
+            <div className="row">
+              <button onClick={importPaste} disabled={!paste.trim()}>Importar JSON</button>
+              {pasteError && <span className="error">{pasteError}</span>}
+            </div>
+          </div>
+        </details>
       </div>
     </details>
   )

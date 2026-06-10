@@ -31,6 +31,7 @@ const fixture = {
     { level: 2, definition: { name: 'Fighter' } },
   ],
   race: { fullName: 'Wood Elf', baseRaceName: 'Elf' },
+  notes: { backstory: 'Criado entre as árvores antigas, jurou caçar os que profanam a floresta.' },
 }
 
 describe('parseDdbCharacter', () => {
@@ -64,6 +65,10 @@ describe('parseDdbCharacter', () => {
 
   it('pega o avatar', () => {
     expect(parseDdbCharacter(fixture).avatarUrl).toBe('https://example.com/avatar.png')
+  })
+
+  it('pega a história (notes.backstory)', () => {
+    expect(parseDdbCharacter(fixture).backstory).toMatch(/árvores antigas/)
   })
 
   it('desembrulha o envelope { data } do endpoint', () => {
