@@ -14,31 +14,46 @@ projeto próprio (do zero) e voltado a D&D 5e e afins.
 
 ## Demo
 
-Página de demonstração (party fictícia) no GitHub Pages:
+Página de demonstração no GitHub Pages:
 **https://flippelt.github.io/guild-briefings/**
+
+A demo roda em **modo efêmero** (build com `VITE_DEMO=true`): a party fictícia
+recarrega a cada acesso e **nada é salvo** — pode mexer à vontade.
 
 ## Como funciona
 
 Os personagens entram de duas formas:
 
-1. **Import do D&D Beyond (JSON colado)** — abra a ficha **pública** do
-   personagem em
-   `https://character-service.dndbeyond.com/character/v5/character/<ID>`
-   (o `<ID>` está na URL da ficha no D&D Beyond), copie o JSON e cole no painel
-   "Importar do D&D Beyond". O parsing extrai nome, raça, classes/nível,
-   atributos (com bônus raciais/feats), retrato e **PV aproximado**.
+1. **Import do D&D Beyond (por link)** — cole o **link do personagem público**
+   (ex.: `https://www.dndbeyond.com/characters/123456789`) e o app busca o JSON.
+   Extrai nome, raça, classes/nível, atributos (com bônus raciais/feats),
+   retrato, história e **PV aproximado**. Fallback: colar o JSON manualmente.
 2. **Manual** — formulário pra qualquer sistema, sem depender do DDB.
 
 Tudo persiste no **localStorage** do dispositivo (cada tablet lembra do seu
-dossiê). Os campos importados podem ser **editados** no cartão.
+dossiê). Os campos importados podem ser **editados** no cartaz.
 
-### Por que JSON colado (e não busca por ID)?
+### Como a busca por link funciona (e o D&D Beyond)
 
-O D&D Beyond **não tem API pública oficial**. O endpoint usado pela comunidade
-é não-oficial, só serve personagens públicos, e o navegador é bloqueado por
-CORS de chamá-lo direto. Colar o JSON é **iniciado pelo usuário** (sem
-scraping), evita CORS e não depende de servidor. Buscar por ID via proxy é
-possível no futuro, mas é mais frágil e área-cinza de ToS.
+O D&D Beyond **não tem API pública oficial**; o endpoint é não-oficial e só
+serve personagens **públicos**. O navegador costuma ser bloqueado por **CORS**
+ao chamá-lo direto, então a busca tenta, em ordem:
+
+1. **direto** (caso o endpoint permita CORS);
+2. **`/.netlify/functions/ddb-character`** — uma *Netlify Function* (proxy
+   server-side, mesma origem do app → sem CORS, sem terceiros). É o caminho
+   limpo no deploy de Netlify (ex.: o deploy privado da mesa).
+3. um **proxy público de CORS** como último recurso (dev/demo).
+
+> **Importar por link depende do deploy no Netlify.** A *Netlify Function*
+> (`netlify/functions/ddb-character.mjs`) é o proxy confiável e sem terceiros —
+> o Netlify a detecta automaticamente (pasta `netlify/functions/`), sem
+> configuração. No **GitHub Pages** (estático, sem função) o link pode não
+> funcionar (depende do DDB liberar CORS ou de um proxy público); ali use o
+> fallback de **colar JSON**, que sempre funciona.
+
+Nada é armazenado pelo proxy — ele só repassa o JSON do personagem que o
+próprio usuário pediu.
 
 ### Sobre CA
 

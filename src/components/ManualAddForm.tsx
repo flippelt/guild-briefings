@@ -18,12 +18,15 @@ export function ManualAddForm({ onAdd }: { onAdd: (c: BriefingCharacter) => void
   const [level, setLevel] = useState('1')
   const [hp, setHp] = useState('')
   const [ac, setAc] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
+  const [backstory, setBackstory] = useState('')
   const [abilities, setAbilities] = useState<Record<AbilityKey, string>>({
     str: '', dex: '', con: '', int: '', wis: '', cha: '',
   })
 
   const reset = () => {
     setName(''); setPlayer(''); setRace(''); setClassName(''); setLevel('1'); setHp(''); setAc('')
+    setAvatarUrl(''); setBackstory('')
     setAbilities({ str: '', dex: '', con: '', int: '', wis: '', cha: '' })
   }
 
@@ -50,6 +53,8 @@ export function ManualAddForm({ onAdd }: { onAdd: (c: BriefingCharacter) => void
         : {}),
       ...(maxHp !== undefined ? { hp: maxHp, maxHp } : {}),
       ...(numOrUndef(ac) !== undefined ? { ac: numOrUndef(ac) } : {}),
+      ...(avatarUrl.trim() ? { avatarUrl: avatarUrl.trim() } : {}),
+      ...(backstory.trim() ? { backstory: backstory.trim() } : {}),
       source: 'manual',
     }
     onAdd(c)
@@ -81,6 +86,8 @@ export function ManualAddForm({ onAdd }: { onAdd: (c: BriefingCharacter) => void
             </label>
           ))}
         </div>
+        <label className="field"><span>Retrato (URL da imagem)</span><input value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} placeholder="https://…" /></label>
+        <label className="field"><span>História</span><textarea value={backstory} onChange={(e) => setBackstory(e.target.value)} rows={3} placeholder="A lenda por trás do aventureiro…" /></label>
         <div className="row">
           <button onClick={add} disabled={!name.trim()}>+ adicionar</button>
         </div>

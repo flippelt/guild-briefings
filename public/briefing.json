@@ -1,0 +1,101 @@
+{
+  "guildName": "Os Errantes do Cálice",
+  "parties": [
+    { "id": "p-laminas", "name": "Lâminas do Cálice" },
+    { "id": "p-selo", "name": "Selo & Sombra" }
+  ],
+  "party": [
+    {
+      "id": "demo-sivra",
+      "name": "Sívra Folhargêntea",
+      "race": "Elfa da Floresta",
+      "classes": [{ "name": "Patrulheira", "level": 5, "subclass": "Caçadora" }],
+      "level": 5,
+      "partyId": "p-laminas",
+      "abilities": { "str": 12, "dex": 17, "con": 14, "int": 10, "wis": 15, "cha": 8 },
+      "hp": 44, "maxHp": 44, "ac": 16, "player": "demo", "source": "manual",
+      "backstory": "Criada sob os galhos antigos da Mata de Eldroth, Sívra viu a floresta arder quando os lenhadores do barão avançaram. Sobreviveu jurando que nenhuma machado profanaria de novo o que ela protege. Caça em silêncio, fala menos ainda — mas suas flechas dizem o bastante."
+    },
+    {
+      "id": "demo-korgath",
+      "name": "Korgath Quebra-Escudos",
+      "race": "Meio-Orc",
+      "classes": [{ "name": "Bárbaro", "level": 5, "subclass": "Fúria Selvagem" }],
+      "level": 5,
+      "partyId": "p-laminas",
+      "abilities": { "str": 18, "dex": 13, "con": 16, "int": 8, "wis": 10, "cha": 12 },
+      "hp": 58, "maxHp": 58, "ac": 15, "player": "demo", "source": "manual",
+      "backstory": "Expulso do clã por recusar uma guerra que considerava tola, Korgath vendeu o braço a quem pagasse — até descobrir que o aço também serve pra proteger. Carrega o escudo lascado do irmão que não voltou; é o único elo que ainda o prende a quem foi."
+    },
+    {
+      "id": "demo-aldo",
+      "name": "Frei Aldo",
+      "race": "Humano",
+      "classes": [{ "name": "Clérigo", "level": 5, "subclass": "Domínio da Vida" }],
+      "level": 5,
+      "partyId": "p-selo",
+      "abilities": { "str": 13, "dex": 10, "con": 14, "int": 11, "wis": 17, "cha": 12 },
+      "hp": 38, "maxHp": 38, "ac": 18, "player": "demo", "source": "manual",
+      "backstory": "Órfão criado no claustro de São Vercommon, Aldo curava os doentes da estrada muito antes de ouvir a voz da Luz. Acredita que toda alma merece uma segunda chance — inclusive a de Korgath, e talvez a sua própria, pelo que fez na peste de Pedravéu."
+    },
+    {
+      "id": "demo-pip",
+      "name": "Pip Dedolesto",
+      "race": "Halfling",
+      "classes": [{ "name": "Ladino", "level": 5, "subclass": "Trapaceiro Arcano" }],
+      "level": 5,
+      "partyId": "p-selo",
+      "abilities": { "str": 8, "dex": 18, "con": 12, "int": 14, "wis": 13, "cha": 10 },
+      "hp": 33, "maxHp": 33, "ac": 15, "player": "demo", "source": "manual",
+      "backstory": "Batedor de carteiras nos becos de Pedravéu até roubar o anel errado — um que sussurrava feitiços. Agora mistura dedos rápidos e truques arcanos, sempre de olho na próxima fechadura e na próxima saída. Jura que está nessa pela amizade; ninguém acredita, nem ele."
+    }
+  ],
+  "quests": [
+    {
+      "id": "demo-q1",
+      "title": "O Sino Silencioso de Aldeia-Bruma",
+      "objective": "Descobrir por que o sino da capela parou de tocar — e o que ronda a névoa à noite.",
+      "status": "ativa",
+      "partyId": "p-laminas",
+      "reward": "200 po + a gratidão do prior"
+    },
+    {
+      "id": "demo-q2",
+      "title": "A Dívida com o Mercador Vex",
+      "objective": "Escoltar a caravana de Vex até Pedravéu antes da lua cheia.",
+      "status": "ativa",
+      "partyId": "p-selo",
+      "reward": "Passagem livre pelos portões da cidade"
+    },
+    {
+      "id": "demo-q3",
+      "title": "Os Ossos do Rei-Sob-a-Colina",
+      "objective": "Recuperar a coroa da cripta — selada por um motivo.",
+      "status": "pausada",
+      "adventurerIds": ["demo-sivra", "demo-pip"],
+      "reward": "??? (rumores de magia)"
+    },
+    {
+      "id": "demo-q4",
+      "title": "O Lobo de Vinhedo Velho",
+      "objective": "Caçar a besta que dizimava os rebanhos nas encostas.",
+      "status": "concluida",
+      "partyId": "p-laminas",
+      "reward": "150 po (pagos) + 3 barris do melhor tinto"
+    }
+  ],
+  "recaps": [
+    {
+      "id": "demo-r2",
+      "title": "A névoa que sussurra",
+      "date": "Sessão 4",
+      "body": "A companhia chegou a Aldeia-Bruma sob chuva fina. O sino da capela, mudo há semanas. Sívra rastreou pegadas que se desfaziam na névoa; Frei Aldo sentiu a presença de algo profano sob o cemitério. Korgath quase derrubou a porta da cripta — Pip o conteve, a tempo de notar a armadilha."
+    },
+    {
+      "id": "demo-r1",
+      "title": "O contrato no Cálice Rachado",
+      "date": "Sessão 3",
+      "body": "Tudo começou na taverna O Cálice Rachado, onde o prior ofereceu moedas e o mercador Vex ofereceu problemas. A companhia aceitou os dois — porque dinheiro é dinheiro, e problemas pagam melhor."
+    }
+  ]
+}

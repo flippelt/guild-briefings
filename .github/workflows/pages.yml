@@ -25,10 +25,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build (base = /guild-briefings/)
+      - name: Build (base = /guild-briefings/, modo demo)
         run: npm run build
         env:
           BASE_PATH: /guild-briefings/
+          VITE_DEMO: 'true'
       - uses: actions/configure-pages@v5
         with:
           enablement: true

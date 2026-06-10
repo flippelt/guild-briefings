@@ -1,237 +1,636 @@
+/* Fontes de assinatura (self-host, uso pessoal) — usadas no signFont das guildas */
+@font-face { font-family: 'Attallia'; src: url('/fonts/AttalliaSignatureRegularPersonalUseOnly-mLq7G.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Autograf'; src: url('/fonts/AutografPersonalUseOnly-mOBm.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Bastliga One'; src: url('/fonts/Bastliga One.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Honofly'; src: url('/fonts/Honofly-0WYV4.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Montreuil'; src: url('/fonts/MontreuilSignatureFont-WypBE.ttf') format('truetype'); font-display: swap; }
+@font-face { font-family: 'Patricia Wilcie'; src: url('/fonts/PatriciaWilcieDemo-DYdZ9.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'The Scientist'; src: url('/fonts/TheScientist-L3EyW.ttf') format('truetype'); font-display: swap; }
+
 :root {
-  --bg: #15100a;
-  --bg-2: #1f1710;
-  --panel: #241b12;
-  --ink: #f0e6d2;
-  --ink-dim: #b9a888;
-  --gold: #c8a24a;
-  --gold-soft: rgba(200, 162, 74, 0.18);
-  --line: #3a2c1c;
-  --danger: #d77;
-  --radius: 12px;
+  --bg: #100b07;
+  --bg-2: #19120b;
+  --panel: #1f1810;
+  --panel-2: #261d12;
+  --ink: #efe3cb;
+  --ink-dim: #b29c79;
+  --gold: #d8b25a;
+  --gold-bright: #f0d089;
+  --ember: #e07b3a;
+  --line: #41311d;
+  --line-soft: #2c2114;
+  --green: #8fbf6f;
+  --danger: #d9836f;
+  --radius: 10px;
+  --display: 'Cinzel', Georgia, 'Times New Roman', serif;
+  --body: 'EB Garamond', Georgia, serif;
+  --script: 'Tangerine', 'Segoe Script', cursive;
+  /* Pergaminho bege: superfície dos cartões/áreas (tinta escura por cima). */
+  --parch:
+    radial-gradient(80% 60% at 18% 12%, rgba(150, 110, 60, 0.1), transparent 60%),
+    radial-gradient(70% 55% at 86% 92%, rgba(120, 80, 40, 0.13), transparent 60%),
+    repeating-linear-gradient(94deg, rgba(120, 90, 50, 0.045) 0 2px, transparent 2px 6px),
+    linear-gradient(180deg, #efe3c6, #e0cda3);
+  /* Pergaminho rústico p/ bilhetes do mural: mosqueado, manchas, fibras. */
+  --parch-note:
+    radial-gradient(circle at 16% 22%, rgba(120, 85, 40, 0.14), transparent 42%),
+    radial-gradient(circle at 82% 26%, rgba(120, 85, 40, 0.1), transparent 46%),
+    radial-gradient(circle at 62% 86%, rgba(95, 62, 26, 0.16), transparent 52%),
+    radial-gradient(circle at 28% 74%, rgba(150, 110, 60, 0.09), transparent 42%),
+    repeating-linear-gradient(98deg, rgba(120, 90, 50, 0.05) 0 3px, transparent 3px 7px),
+    linear-gradient(158deg, #ecdcb4, #dcc699);
+  --parch-ink: #2c2417;
+  --parch-dim: #6e5c41;
+  --parch-line: #b59c72;
+  --oxblood: #8a3324;
+  --sepia: #8a5a1c;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 
+html, body { height: 100%; }
+
 body {
   margin: 0;
-  background:
-    radial-gradient(1200px 600px at 50% -10%, #2a1f14 0%, transparent 60%),
-    var(--bg);
+  background: var(--bg);
   color: var(--ink);
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-family: var(--body);
+  font-size: 18px;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-.app {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px 18px 64px;
+/* Barras de rolagem finas, douradas e integradas (não cinzas); horizontais
+   evitadas via overflow-x: hidden nos contêineres. Estilo minimalista. */
+* { scrollbar-width: thin; scrollbar-color: rgba(200, 162, 74, 0.55) transparent; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 162, 74, 0.5);
+  border-radius: 9px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(216, 178, 90, 0.85);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ============ Fundo animado (sem WebGL) ============ */
+.bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bg__glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(60% 50% at 50% -8%, rgba(224, 123, 58, 0.22), transparent 70%),
+    radial-gradient(50% 60% at 50% 120%, rgba(120, 70, 30, 0.18), transparent 70%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+}
+.bg__embers {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 80%, rgba(240, 200, 120, 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 70% 90%, rgba(224, 123, 58, 0.6), transparent),
+    radial-gradient(1px 1px at 40% 70%, rgba(240, 200, 120, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 85% 75%, rgba(240, 200, 120, 0.5), transparent),
+    radial-gradient(1px 1px at 55% 95%, rgba(224, 123, 58, 0.5), transparent);
+  background-size: 100% 100%;
+  animation: emberRise 14s linear infinite;
+  opacity: 0.7;
+}
+@keyframes emberRise {
+  from { transform: translateY(0); opacity: 0.7; }
+  to { transform: translateY(-70vh); opacity: 0; }
+}
+.bg__grain {
+  position: absolute; inset: -50%;
+  background-image: repeating-radial-gradient(rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 3px);
+  opacity: 0.5;
+  animation: grain 6s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); } 50% { transform: translate(-2%, 1%); } 100% { transform: translate(1%, -1%); }
 }
 
-/* ---------- Masthead ---------- */
-.masthead {
-  text-align: center;
-  padding: 18px 0 22px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 20px;
+/* ============ Boot screen ============ */
+.boot {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; text-align: center; cursor: pointer;
+  background: radial-gradient(60% 60% at 50% 40%, #1c130b, #0a0705);
 }
+.boot__sigil { font-size: 4rem; color: var(--gold); filter: drop-shadow(0 0 10px rgba(224, 150, 70, 0.35)); animation: pulse 3s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+.boot__title { font-family: var(--display); letter-spacing: 0.32em; font-size: clamp(1.4rem, 4vw, 2.4rem); color: var(--gold-bright); margin: 0; }
+.boot__lines {
+  font-family: var(--script); min-height: 4.5em;
+  display: flex; flex-direction: column; align-items: center; gap: 0.1em;
+}
+.boot__line {
+  display: inline-block; margin: 0; font-weight: 700; line-height: 1.15;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  color: #ead9b0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+/* A pena correndo: a máscara revela o texto da esquerda pra direita com a
+   ponta da frente suave (tinta assentando), não letra a letra. */
+.boot__line--writing {
+  -webkit-mask-image: linear-gradient(90deg, #000 0 72%, transparent 90%);
+  mask-image: linear-gradient(90deg, #000 0 72%, transparent 90%);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: left center; mask-position: left center;
+  -webkit-mask-size: 0% 100%; mask-size: 0% 100%;
+  animation: inkFlow var(--dur, 1.4s) linear forwards;
+}
+@keyframes inkFlow {
+  to { -webkit-mask-size: 230% 100%; mask-size: 230% 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot__line--writing { animation: none; -webkit-mask-image: none; mask-image: none; }
+}
+.boot__skip { margin-top: 22px; font-family: var(--script); font-size: 1.9rem; color: #9a8159; }
+
+/* ============ App shell ============ */
+.app { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 22px 16px 70px; }
+
+.masthead { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 12px 0 18px; }
+.masthead__crest { font-size: 2.6rem; color: var(--gold); filter: drop-shadow(0 1px 5px rgba(224, 150, 70, 0.3)); }
+.masthead__id { text-align: center; }
 .masthead__title {
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  letter-spacing: 0.06em;
-  color: var(--gold);
-  text-shadow: 0 2px 14px rgba(200, 162, 74, 0.25);
+  font-family: var(--display); font-weight: 700; margin: 0;
+  font-size: clamp(1.6rem, 4.5vw, 2.8rem); letter-spacing: 0.08em;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 60%, #a9803a);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
-.masthead__sub {
-  margin: 4px 0 0;
-  color: var(--ink-dim);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-size: 0.78rem;
+.masthead__rename { background: none; border: none; color: var(--ink-dim); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; padding: 2px; }
+.masthead__rename:hover { color: var(--gold); }
+.masthead__demo {
+  display: inline-block; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ember); border: 1px solid rgba(224, 123, 58, 0.45); border-radius: 999px; padding: 2px 10px;
 }
 
-/* ---------- Intake panels ---------- */
-.intake {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 24px;
+/* ============ Tabs ============ */
+.tabs {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 4px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  padding: 6px 0; margin-bottom: 22px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2), transparent);
 }
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: hidden;
+.tab {
+  display: flex; align-items: center; gap: 8px;
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-dim); font-family: var(--display); font-size: 0.92rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 16px; border-radius: 8px; position: relative;
 }
+.tab:hover { color: var(--ink); }
+.tab__sigil { color: var(--gold); opacity: 0.7; }
+.tab--on { color: var(--gold-bright); }
+.tab--on .tab__sigil { opacity: 1; }
+.tab--on::after {
+  content: ''; position: absolute; left: 16px; right: 16px; bottom: 1px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  box-shadow: 0 0 5px rgba(224, 150, 70, 0.35);
+}
+
+/* ============ Views / generic ============ */
+.view { animation: fadeUp 0.4s ease both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.section-label {
+  font-family: var(--display); font-size: 1rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin: 22px 0 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.empty { text-align: center; color: var(--ink-dim); padding: 36px 0; font-style: italic; }
+.muted { color: var(--ink-dim); font-size: 0.85rem; }
+.muted code { color: var(--gold); font-size: 0.78em; word-break: break-all; }
+.error { color: var(--danger); font-size: 0.88rem; }
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ornamento de moldura reutilizável */
+.framed { position: relative; }
+.framed::before, .framed::after {
+  content: ''; position: absolute; width: 12px; height: 12px; border: 1px solid var(--gold);
+  opacity: 0.5;
+}
+.framed::before { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+.framed::after { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+
+/* ============ Intake panels ============ */
+.intake { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .panel > summary {
-  cursor: pointer;
-  padding: 12px 16px;
-  font-weight: 600;
-  color: var(--gold);
-  letter-spacing: 0.03em;
-  list-style: none;
+  cursor: pointer; padding: 12px 16px; font-family: var(--display); font-size: 0.9rem;
+  letter-spacing: 0.06em; color: var(--gold); list-style: none;
 }
 .panel > summary::-webkit-details-marker { display: none; }
-.panel > summary::before { content: '▸ '; color: var(--ink-dim); }
-.panel[open] > summary::before { content: '▾ '; }
-.panel__body {
-  padding: 0 16px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.panel > summary::before { content: '◈ '; color: var(--ink-dim); }
+.panel__body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.subpanel > summary { cursor: pointer; color: var(--ink-dim); font-size: 0.85rem; list-style: none; padding: 2px 0; }
+.subpanel > summary::-webkit-details-marker { display: none; }
+.subpanel > summary::before { content: '▸ '; }
+.subpanel[open] > summary::before { content: '▾ '; }
+.subpanel__body { display: flex; flex-direction: column; gap: 8px; padding-top: 6px; }
 
-/* ---------- Roster grid ---------- */
-.roster {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
-}
-.empty {
-  text-align: center;
-  color: var(--ink-dim);
-  padding: 40px 0;
-}
-
-/* ---------- Character card ---------- */
+/* ============ Roster / character cards ============ */
+.roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
 .card {
-  background: linear-gradient(180deg, var(--bg-2), var(--panel));
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  position: relative;
+  background: var(--parch);
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 14px 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.25);
 }
-.card__top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.card::before, .card::after {
+  content: ''; position: absolute; width: 14px; height: 14px; border: 1px solid rgba(216, 178, 90, 0.5);
 }
-.card__avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--gold);
-  flex: none;
-}
-.card__avatar--blank {
-  display: grid;
-  place-items: center;
-  background: var(--gold-soft);
-  color: var(--gold);
-  font-size: 1.6rem;
-  font-weight: 700;
-}
+.card::before { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+.card::after { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+.card__top { display: flex; align-items: center; gap: 12px; }
+.card__avatar { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); flex: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45); }
+.card__avatar--blank { display: grid; place-items: center; background: rgba(216, 178, 90, 0.12); color: var(--gold); font-family: var(--display); font-size: 1.6rem; }
 .card__id { flex: 1; min-width: 0; }
-.card__name { margin: 0; font-size: 1.3rem; color: var(--ink); }
-.card__sub { margin: 2px 0 0; color: var(--ink-dim); font-size: 0.9rem; }
-.card__player { margin: 2px 0 0; color: var(--ink-dim); font-size: 0.78rem; font-style: italic; }
-.card__level {
-  flex: none;
-  width: 38px; height: 38px;
-  display: grid; place-items: center;
-  border-radius: 50%;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  font-weight: 700;
-}
+.card__name { font-family: var(--display); margin: 0; font-size: 1.25rem; color: var(--ink); }
+.card__sub { margin: 2px 0 0; color: var(--ink-dim); font-size: 0.92rem; }
+.card__player { margin: 1px 0 0; color: var(--ink-dim); font-size: 0.78rem; font-style: italic; }
+.card__level { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--gold); color: var(--gold); font-family: var(--display); font-weight: 700; }
 
-.card__vitals {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0;
-}
-.vital {
-  flex: 1;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 6px 4px;
-}
-.vital__label { display: block; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--ink-dim); }
-.vital__value { display: block; font-size: 1.15rem; font-weight: 700; }
+.card__vitals { display: flex; gap: 8px; margin: 12px 0; }
+.vital { flex: 1; text-align: center; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--line-soft); border-radius: 8px; padding: 6px 4px; }
+.vital__label { display: block; font-size: 0.64rem; letter-spacing: 0.12em; color: var(--ink-dim); }
+.vital__value { display: block; font-size: 1.15rem; font-weight: 700; color: var(--gold-bright); }
 
-.card__abilities {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 4px;
-}
-.abil {
-  text-align: center;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 4px 0;
-}
-.abil__label { display: block; font-size: 0.6rem; color: var(--ink-dim); letter-spacing: 0.06em; }
+.card__abilities { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.abil { text-align: center; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--line-soft); border-radius: 6px; padding: 4px 0; }
+.abil__label { display: block; font-size: 0.58rem; color: var(--ink-dim); letter-spacing: 0.06em; }
 .abil__score { display: block; font-weight: 700; }
 .abil__mod { display: block; font-size: 0.72rem; color: var(--gold); }
-
-.card__notes {
-  margin: 10px 0 0;
-  font-size: 0.88rem;
-  color: var(--ink-dim);
-  white-space: pre-wrap;
-}
+.card__notes { margin: 10px 0 0; font-size: 0.9rem; color: var(--ink-dim); white-space: pre-wrap; }
 .card__actions, .card__edit { margin-top: 10px; }
 
-/* ---------- Forms / inputs ---------- */
-input, textarea, button {
-  font: inherit;
-  color: var(--ink);
+/* ============ Quests ============ */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.quest {
+  position: relative; background: var(--parch);
+  border: 1px solid var(--line); border-left: 3px solid var(--ink-dim);
+  border-radius: var(--radius); padding: 14px;
 }
-input, textarea {
-  width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 7px 9px;
+.quest--ativa { border-left-color: var(--ember); }
+.quest--concluida { border-left-color: var(--green); opacity: 0.72; }
+.quest--pausada { border-left-color: var(--ink-dim); }
+.quest__head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.quest__title { font-family: var(--display); font-size: 1.1rem; margin: 0; color: var(--ink); }
+.quest__objective { margin: 8px 0 0; color: var(--ink-dim); }
+.quest__reward { margin: 8px 0 0; color: var(--gold); font-size: 0.92rem; }
+.quest__notes { margin: 6px 0 0; color: var(--ink-dim); font-size: 0.86rem; }
+.quest__actions { margin-top: 10px; }
+.quest--editing { display: flex; flex-direction: column; gap: 8px; }
+
+.badge {
+  font-family: var(--display); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor;
 }
-input:focus, textarea:focus { outline: 1px solid var(--gold); border-color: var(--gold); }
+.badge--ativa { color: var(--ember); }
+.badge--pausada { color: var(--ink-dim); }
+.badge--concluida { color: var(--green); }
+
+/* ============ Crônicas / recaps ============ */
+.chronicle { display: flex; flex-direction: column; gap: 14px; position: relative; padding-left: 18px; }
+.chronicle::before { content: ''; position: absolute; left: 4px; top: 6px; bottom: 6px; width: 1px; background: linear-gradient(var(--gold), transparent); opacity: 0.4; }
+.recap { position: relative; background: var(--parch); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+.recap::before { content: '◆'; position: absolute; left: -18px; top: 14px; color: var(--gold); font-size: 0.7rem; }
+.recap__head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.recap__title { font-family: var(--display); font-size: 1.15rem; margin: 0; color: var(--ink); }
+.recap__date { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+.recap__body { margin: 8px 0 0; color: var(--ink); line-height: 1.55; white-space: pre-wrap; }
+.recap__actions { margin-top: 10px; }
+.recap--editing { display: flex; flex-direction: column; gap: 8px; }
+
+/* ============ Status ============ */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.stat-tile {
+  text-align: center; padding: 18px 10px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--parch); position: relative;
+}
+.stat-tile__value { display: block; font-family: var(--display); font-size: 2.2rem; font-weight: 700; color: var(--gold-bright); line-height: 1; }
+.stat-tile__label { display: block; margin-top: 6px; font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim); }
+.muster { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.muster__row { display: flex; align-items: baseline; gap: 10px; padding: 8px 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--line-soft); border-radius: 8px; }
+.muster__name { font-family: var(--display); color: var(--ink); }
+.muster__meta { flex: 1; color: var(--ink-dim); font-size: 0.9rem; }
+.muster__hp { color: var(--gold); font-size: 0.85rem; }
+
+/* ============ Salão = quadro de avisos (cortiça) ============ */
+.board {
+  position: relative;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.06) 0 1px, transparent 1px) 0 0 / 13px 13px,
+    radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px) 0 0 / 17px 17px,
+    linear-gradient(180deg, #8a6a44, #6d5135);
+  border: 12px solid #4a3420;
+  border-radius: 6px;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.45), 0 12px 32px rgba(0, 0, 0, 0.5);
+  padding: 24px 20px;
+}
+.board__empty { text-align: center; color: #ecdcb8; opacity: 0.85; padding: 30px 0; font-style: italic; }
+
+.board__company { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 24px; }
+.namecard {
+  position: relative; display: inline-flex; flex-direction: column; align-items: center; min-width: 112px;
+  background: var(--parch-note); color: var(--parch-ink); border: none;
+  border-radius: 120px 8px 110px 9px / 9px 110px 8px 120px;
+  padding: 10px 16px 8px;
+  box-shadow: inset 0 0 16px rgba(110, 75, 35, 0.4), 0 4px 11px rgba(0, 0, 0, 0.45);
+}
+.namecard__name { font-family: var(--display); font-size: 0.95rem; line-height: 1.1; }
+.namecard__meta { font-size: 0.8rem; color: var(--parch-dim); margin-top: 2px; }
+
+.board__notes { display: flex; flex-wrap: wrap; gap: 20px 18px; justify-content: center; align-items: flex-start; }
+.note {
+  position: relative; width: 232px; font-family: var(--body);
+  background: var(--parch-note); color: var(--parch-ink); border: none;
+  /* bordas orgânicas (recortadas à mão), não retângulo liso */
+  border-radius: 255px 14px 225px 16px / 16px 225px 14px 255px;
+  padding: 18px 16px 16px;
+  box-shadow: inset 0 0 22px rgba(110, 72, 32, 0.42), 0 7px 16px rgba(0, 0, 0, 0.5);
+  transition: transform 0.12s ease;
+}
+.note:nth-child(even) { border-radius: 14px 255px 16px 225px / 225px 14px 255px 16px; }
+.note:nth-child(3n) { border-radius: 225px 16px 255px 14px / 14px 255px 16px 225px; }
+.note:hover { transform: rotate(0deg) scale(1.02) !important; z-index: 2; }
+.note__title { font-family: var(--display); font-size: 1.02rem; margin: 0 0 6px; color: var(--parch-ink); }
+.note__obj { margin: 0; color: var(--parch-dim); font-size: 0.95rem; line-height: 1.45; }
+.note__reward { margin: 8px 0 0; color: var(--sepia); font-size: 0.9rem; }
+.note__stamp--hold {
+  display: inline-block; margin-top: 8px; font-family: var(--display); font-size: 0.6rem;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--parch-dim);
+  border: 1px dashed var(--parch-dim); padding: 1px 8px; border-radius: 3px;
+}
+.note--concluida { filter: saturate(0.85) brightness(0.95); }
+.note--concluida .note__title { text-decoration: line-through; text-decoration-color: rgba(138, 51, 36, 0.55); }
+.note--concluida .note__obj, .note--concluida .note__reward { opacity: 0.7; }
+
+/* tachinha de latão no topo do bilhete/etiqueta */
+.note__pin, .namecard__pin {
+  position: absolute; left: 50%; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fce9b0, #c89b3a 45%, #7a5a18 92%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.55);
+}
+.note__pin { top: -7px; width: 15px; height: 15px; }
+.namecard__pin { top: -6px; width: 11px; height: 11px; }
+
+/* selo de cera nas concluídas */
+.note__seal {
+  position: absolute; bottom: -12px; right: -12px; width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center; color: #f3ead0; font-size: 1.35rem; font-weight: 700;
+  background: radial-gradient(circle at 35% 28%, #b5432f, #8a3324 60%, #5e2017 100%);
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.55), inset 0 0 9px rgba(0, 0, 0, 0.45);
+  border: 2px solid rgba(94, 32, 23, 0.85); transform: rotate(-12deg);
+}
+
+/* ============ Quick-add bars ============ */
+.quick-add { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+.quick-add input { flex: 1; min-width: 140px; }
+.quick-add--col { flex-direction: column; align-items: stretch; }
+
+/* ============ Forms / inputs / buttons ============ */
+input, textarea, select, button { font: inherit; color: var(--ink); }
+input, textarea, select {
+  width: 100%; background: rgba(0, 0, 0, 0.32); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
 textarea { resize: vertical; }
+select { accent-color: var(--sepia); }
+select option { background: #efe3c6; color: #2c2417; }
+/* Realce da seleção em tom da página (ouro), no lugar do azul do sistema.
+   Cobertura varia por navegador (Firefox respeita; Chrome aplica no item
+   selecionado). */
+select option:checked,
+select option:hover {
+  background: var(--gold) !important;
+  color: #2c2417 !important;
+}
 
 button {
-  cursor: pointer;
-  background: var(--gold);
-  color: #1a120b;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-weight: 600;
+  cursor: pointer; background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color: #2a1c08; border: none; border-radius: 8px; padding: 8px 16px;
+  font-family: var(--display); font-size: 0.82rem; letter-spacing: 0.06em; font-weight: 600;
 }
-button:disabled { opacity: 0.5; cursor: default; }
-button.ghost {
-  background: transparent;
-  border: 1px solid var(--line);
-  color: var(--ink-dim);
-}
-button.ghost:hover { border-color: var(--gold); color: var(--gold); }
-button.danger { color: var(--danger); }
-button.ghost.danger { color: var(--danger); border-color: rgba(221, 119, 119, 0.4); }
+button:hover { filter: brightness(1.08); }
+button:disabled { opacity: 0.45; cursor: default; filter: none; }
+button.ghost { background: none; border: 1px solid var(--line); color: var(--ink-dim); }
+button.ghost:hover { border-color: var(--gold); color: var(--gold); filter: none; }
+button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(217, 131, 111, 0.4); background: none; }
 
-.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .field { display: flex; flex-direction: column; gap: 3px; }
 .field > span { font-size: 0.72rem; color: var(--ink-dim); letter-spacing: 0.04em; }
-.manual-abilities {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-}
+.manual-abilities { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .field--abil > span { text-align: center; }
 
-.muted { color: var(--ink-dim); font-size: 0.85rem; }
-.muted code { color: var(--gold); font-size: 0.8em; word-break: break-all; }
-.error { color: var(--danger); font-size: 0.85rem; }
-
 .app__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line);
 }
+
+/* ============ Superfícies em pergaminho (tinta escura) ============ */
+.card, .quest, .recap, .stat-tile { color: var(--parch-ink); border-color: var(--parch-line); }
+.card::before, .card::after { border-color: rgba(138, 90, 28, 0.5); }
+
+.card__name, .quest__title, .recap__title { color: var(--parch-ink); }
+.card__sub, .card__player, .card__notes,
+.quest__objective, .quest__notes { color: var(--parch-dim); }
+.card__level { border-color: var(--sepia); color: var(--sepia); }
+
+.vital, .abil { background: rgba(70, 45, 15, 0.08); border-color: var(--parch-line); }
+.vital__label, .abil__label { color: var(--parch-dim); }
+.vital__value, .abil__mod, .stat-tile__value { color: var(--oxblood); }
+.abil__score { color: var(--parch-ink); }
+
+.quest__reward, .recap__date { color: var(--sepia); }
+.recap__body { color: var(--parch-ink); }
+.stat-tile__label { color: var(--parch-dim); }
+
+.quest--pausada { border-left-color: var(--parch-line); }
+.quest--concluida { border-left-color: #5f8a44; }
+.badge--pausada { color: var(--parch-dim); }
+.badge--concluida { color: #4f7a3a; }
+
+/* Campos em edição dentro de superfícies de pergaminho: papel claro. */
+.card input, .card textarea, .card select,
+.quest input, .quest textarea, .quest select,
+.recap input, .recap textarea {
+  background: rgba(255, 251, 238, 0.7);
+  color: var(--parch-ink);
+  border-color: var(--parch-line);
+}
+.card input:focus, .card textarea:focus, .card select:focus,
+.quest input:focus, .quest textarea:focus, .quest select:focus,
+.recap input:focus, .recap textarea:focus {
+  box-shadow: 0 0 0 1px var(--sepia); border-color: var(--sepia);
+}
+/* Botões "ghost" sobre pergaminho ganham contraste escuro. */
+.card .ghost, .quest .ghost, .recap .ghost { color: var(--parch-dim); border-color: var(--parch-line); }
+.card .ghost:hover, .quest .ghost:hover, .recap .ghost:hover { color: var(--oxblood); border-color: var(--oxblood); }
+.card .ghost.danger, .quest .ghost.danger, .recap .ghost.danger { color: var(--oxblood); border-color: rgba(138, 51, 36, 0.45); }
+
+/* ============ Cartaz de procurado (jogadores) ============ */
+.roster--posters { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.poster {
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  width: 100%; text-align: center; cursor: pointer; font-family: var(--body);
+  background: var(--parch); color: var(--parch-ink);
+  border: 1px solid var(--parch-line);
+  outline: 3px solid var(--parch-line); outline-offset: -8px;
+  border-radius: 4px; padding: 18px 16px 16px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.poster:hover { transform: translateY(-3px) rotate(-0.4deg); box-shadow: 0 13px 30px rgba(0, 0, 0, 0.6); filter: none; }
+.poster:active { transform: translateY(-1px); }
+.poster__name {
+  font-family: var(--display); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; line-height: 1.08; color: var(--parch-ink);
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+}
+.poster__rule { width: 82%; height: 2px; background: linear-gradient(90deg, transparent, var(--sepia), transparent); opacity: 0.6; }
+.poster__frame {
+  width: 100%; max-width: 200px; aspect-ratio: 1 / 1;
+  border: 2px solid var(--sepia); border-radius: 3px; overflow: hidden;
+  background: rgba(70, 45, 15, 0.1); box-shadow: inset 0 0 22px rgba(60, 35, 10, 0.35);
+  display: grid; place-items: center;
+}
+.poster__frame--lg { max-width: 240px; }
+.poster__photo { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.5) contrast(1.05) brightness(0.96); }
+.poster__photo--blank { font-family: var(--display); font-size: 4rem; color: var(--sepia); filter: none; }
+.poster__meta { font-family: var(--display); font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sepia); }
+
+/* Modal da história */
+.modal {
+  position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px;
+  background: rgba(8, 5, 3, 0.74); backdrop-filter: blur(3px); animation: fadeUp 0.2s ease both;
+}
+.modal__panel { position: relative; max-width: 470px; width: 100%; max-height: 90vh; overflow-x: hidden; overflow-y: auto; cursor: default; }
+.modal__panel.poster { gap: 10px; padding-top: 30px; }
+.modal__close {
+  position: absolute; top: 8px; right: 8px; background: none; border: 1px solid var(--parch-line);
+  color: var(--parch-dim); border-radius: 6px; padding: 3px 9px; font-family: var(--body); letter-spacing: 0;
+}
+.modal__close:hover { color: var(--oxblood); border-color: var(--oxblood); background: none; filter: none; }
+.poster__story { width: 100%; text-align: left; margin-top: 4px; }
+.poster__story-text { color: var(--parch-ink); line-height: 1.6; white-space: pre-wrap; font-size: 1.05rem; }
+.poster__story .field { margin-bottom: 8px; }
+.modal__panel input, .modal__panel textarea { background: rgba(255, 251, 238, 0.72); color: var(--parch-ink); border-color: var(--parch-line); }
+.modal__panel .ghost { color: var(--parch-dim); border-color: var(--parch-line); }
+.modal__panel .ghost:hover { color: var(--oxblood); border-color: var(--oxblood); }
+.modal__panel .ghost.danger { color: var(--oxblood); border-color: rgba(138, 51, 36, 0.45); }
+
+/* ============ Selo de cera (CSS) nas quests concluídas ============ */
+.quest-seal {
+  position: relative; display: block;
+  width: 128px; height: 128px;
+  margin: 6px auto;
+  transform: rotate(-4deg);
+  pointer-events: none;
+  filter: drop-shadow(0 4px 9px rgba(0, 0, 0, 0.5));
+}
+.wax__blob, .wax__stamp { position: absolute; }
+.wax__blob {
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 42% at 38% 30%, rgba(255, 214, 196, 0.5), rgba(255, 214, 196, 0) 55%),
+    radial-gradient(circle at 52% 48%, #be4d37 0%, #9c2a1c 60%, #6e1810 100%);
+  /* rim fino: sombras suaves (selo raso, não bolha grossa) */
+  box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.38), inset 0 3px 7px rgba(255, 180, 150, 0.22);
+  filter: url(#wavy);
+}
+.wax__stamp { inset: 0; width: 100%; height: 100%; }
+/* gravação: mesmo material da cera (tom de vermelho próximo) + relevo (#waxEmboss),
+   nada escuro — letras "elevadas" e não tinta preta */
+.wax__engrave { filter: url(#waxBevel); }
+.wax__ring2 { fill: none; stroke: #5e1409; stroke-width: 0.9; opacity: 0.6; }
+.wax__ring2--in { opacity: 0.5; }
+.wax__ring { font-family: 'Cinzel', Georgia, serif; font-weight: 600; font-size: 8px; letter-spacing: 0.4px; fill: #5e1409; text-anchor: middle; dominant-baseline: central; }
+.wax__motto { font-family: 'Cinzel', Georgia, serif; font-weight: 600; font-size: 7px; letter-spacing: 0.3px; fill: #5e1409; text-anchor: middle; dominant-baseline: central; }
+.wax__label { font-family: 'Cinzel', Georgia, serif; font-weight: 700; font-size: 10px; letter-spacing: 0.3px; fill: #5e1409; text-anchor: middle; dominant-baseline: central; }
+.wax__fleur { font-size: 6px; fill: #5e1409; text-anchor: middle; dominant-baseline: central; }
+/* variações de forma (lumps da cera) */
+.wax--1 .wax__blob { border-radius: 49% 51% 48% 52% / 52% 49% 51% 48%; }
+.wax--2 .wax__blob { border-radius: 54% 46% 56% 44% / 47% 55% 45% 53%; }
+.wax--3 .wax__blob { border-radius: 46% 54% 50% 50% / 55% 45% 55% 45%; }
+.wax--4 .wax__blob { border-radius: 52% 48% 45% 55% / 49% 53% 47% 51%; }
+.wax--5 .wax__blob { border-radius: 56% 44% 53% 47% / 45% 55% 48% 52%; }
+.wax--6 .wax__blob { border-radius: 47% 53% 54% 46% / 52% 47% 53% 48%; }
+
+/* ============ Carimbo de tinta do Salão (selo de borracha) ============ */
+.note__open { position: absolute; inset: 0; z-index: 3; background: none; border: none; padding: 0; margin: 0; cursor: pointer; }
+.qstamp {
+  position: absolute; right: -4px; bottom: -6px; width: 88px; height: 88px;
+  transform: rotate(-5deg); opacity: 0.82; pointer-events: none;
+}
+/* falhas leves de tinta (grunge de carimbo) */
+.qstamp__ink { filter: url(#stampInk); }
+.qstamp__ring { fill: none; stroke: var(--oxblood); stroke-width: 2.4; }
+.qstamp__ring--in { stroke-width: 0.8; }
+.qstamp__arc {
+  font-family: 'Cinzel', Georgia, serif; font-weight: 600; font-size: 7px; letter-spacing: 0.4px;
+  fill: var(--oxblood); text-anchor: middle; dominant-baseline: central;
+}
+.qstamp__arc--sm { font-size: 6px; }
+.qstamp__star { font-size: 7px; fill: var(--oxblood); text-anchor: middle; dominant-baseline: central; }
+.qstamp__bar { stroke: var(--oxblood); stroke-width: 1.5; }
+.qstamp__label {
+  font-family: 'Cinzel', Georgia, serif; font-weight: 700; font-size: 10px; letter-spacing: 0.2px;
+  fill: var(--oxblood); text-anchor: middle; dominant-baseline: central;
+}
+
+/* ============ Quest aberta (pergaminho do contrato) ============ */
+.quest-detail { padding: 30px 22px 22px; text-align: left; }
+.quest-detail__badge { display: inline-block; margin-bottom: 8px; }
+.quest-detail__title { font-size: 1.7rem; margin: 0 0 10px; line-height: 1.12; }
+.quest-detail__obj { color: var(--parch-ink); line-height: 1.55; margin: 0 0 8px; }
+.quest-detail__who { color: #5a2d12; margin: 0 0 6px; font-size: 1.15rem; }
+.quest-detail__reward { color: var(--sepia); margin: 0 0 6px; font-size: 1.1rem; }
+.quest-detail__notes { color: var(--parch-dim); margin: 8px 0 0; white-space: pre-wrap; }
+/* rodapé de contrato: selo + assinatura, alinhados embaixo à direita */
+.contract-foot {
+  display: flex; align-items: flex-end; justify-content: flex-end;
+  gap: 16px; margin-top: 20px;
+}
+.contract-foot .quest-seal { margin: 0; flex: none; }
+/* assinatura: só o nome em fonte de assinatura sobre uma linha; cargo/guilda em
+   fonte normal (área de assinatura de contrato) */
+.contract-sign { text-align: left; transform: rotate(-2.5deg); max-width: 240px; }
+/* assinatura escrita POR CIMA da linha: margem negativa puxa a linha pra dentro
+   do terço inferior do nome; alinhada à esquerda da linha */
+.contract-sign__name {
+  display: block; font-size: 3.4rem; line-height: 0.85; color: #2a1d0d;
+  position: relative; z-index: 1; margin: 0 0 -10px 6px;
+}
+.contract-sign__role {
+  display: block; padding-top: 5px;
+  border-top: 1px solid #b6975f;
+  font-family: var(--body); font-size: 0.45rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--parch-dim);
+}
+
+/* ============ Equipes (Aventureiros) ============ */
+.parties-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 18px; }
+.parties-bar__label { font-family: var(--display); color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.85rem; }
+.party-chip { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 4px 1px 4px; background: rgba(0, 0, 0, 0.22); }
+.party-chip__name { background: none; border: none; color: var(--ink); font-family: var(--display); font-size: 0.82rem; cursor: pointer; padding: 4px 6px; }
+.party-chip__name:hover { color: var(--gold); }
+.party-chip__x { background: none; border: none; color: var(--ink-dim); cursor: pointer; font-size: 0.78rem; padding: 0 6px; }
+.party-chip__x:hover { color: var(--danger); }
+.parties-bar__add { display: inline-flex; gap: 4px; align-items: center; }
+.parties-bar__add input { width: 150px; }
+.party-group { margin-bottom: 6px; }
+
+/* ============ Quem está na quest ============ */
+.quest__who, .note__who { margin: 8px 0 0; }
+.quest__advpick { display: flex; flex-direction: column; gap: 4px; }
+.field-hint { font-size: 0.72rem; color: var(--ink-dim); letter-spacing: 0.04em; }
+.quest__advlist { display: flex; flex-wrap: wrap; gap: 8px; }
+.checkrow { display: inline-flex; align-items: center; gap: 5px; font-size: 0.92rem; }
+.checkrow input { width: auto; }
