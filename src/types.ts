@@ -109,6 +109,8 @@ export interface Briefing {
   recaps: Recap[]
   /** Nome da companhia/guilda (cabeçalho). */
   guildName?: string
+  /** Brasão exibido no topo: flor-de-lis (padrão) ou d20. */
+  crest?: 'fleur' | 'd20'
 }
 
 export const EMPTY_BRIEFING: Briefing = { party: [], parties: [], quests: [], recaps: [] }

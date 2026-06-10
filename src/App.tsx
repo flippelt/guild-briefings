@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Briefing } from './types'
 import { useBriefing, DEMO_MODE } from './store/briefing'
 import { BootScreen } from './components/BootScreen'
+import { D20Icon } from './components/D20Icon'
 import { StatusView } from './views/StatusView'
 import { AdventurersView } from './views/AdventurersView'
 import { QuestsView } from './views/QuestsView'
@@ -53,7 +54,9 @@ export function App() {
       </div>
 
       <header className="masthead">
-        <div className="masthead__crest" aria-hidden="true">⚜</div>
+        <div className="masthead__crest" aria-hidden="true">
+          {briefing.crest === 'd20' ? <D20Icon /> : '⚜'}
+        </div>
         <div className="masthead__id">
           <h1 className="masthead__title">{briefing.guildName || 'Companhia Errante'}</h1>
           {DEMO_MODE ? (
