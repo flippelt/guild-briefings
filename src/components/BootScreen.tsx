@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
+import { D20Icon } from './D20Icon'
 
 const LINES = [
   'Acendem-se as velas do salão…',
@@ -12,7 +13,7 @@ const LINES = [
  * esquerda pra direita, com a borda da frente suave — simula a pena correndo e
  * a tinta assentando no papel (em vez do pop digital, letra a letra).
  */
-export function BootScreen({ onDone }: { onDone: () => void }) {
+export function BootScreen({ onDone, crest }: { onDone: () => void; crest?: 'fleur' | 'd20' }) {
   const [line, setLine] = useState(0)
 
   const handleEnd = () => {
@@ -26,7 +27,7 @@ export function BootScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="boot" onClick={onDone} role="button" aria-label="Pular abertura">
-      <div className="boot__sigil" aria-hidden="true">⚜</div>
+      <div className="boot__sigil" aria-hidden="true">{crest === 'd20' ? <D20Icon /> : '⚜'}</div>
       <h1 className="boot__title">GUILD BRIEFINGS</h1>
       <div className="boot__lines">
         {LINES.slice(0, line).map((l) => (
