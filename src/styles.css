@@ -515,7 +515,9 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 .poster__frame--lg { max-width: 240px; }
 .poster__photo { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.5) contrast(1.05) brightness(0.96); }
 .poster__photo--blank { font-family: var(--display); font-size: 4rem; color: var(--sepia); filter: none; }
-.poster__meta { font-family: var(--display); font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sepia); }
+/* classe/nível: mesma fonte legível do boot e do conteúdo das quests (Bilbo Swash
+   Caps), sem maiúsculas forçadas — vale no card e no modal (poster__meta) */
+.poster__meta { font-family: 'Bilbo Swash Caps', var(--script); font-size: 1.18rem; letter-spacing: 0.02em; text-transform: none; color: var(--sepia); }
 
 /* Modal da história */
 .modal {

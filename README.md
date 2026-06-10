@@ -71,6 +71,12 @@ npm run build    # build de produção (tsc + vite)
 npm run test     # vitest
 ```
 
+## Licença
+
+Código sob **MIT** (ver [LICENSE](LICENSE)). As fontes em `public/fonts/` são de
+terceiros (uso pessoal/não-comercial) e mantêm suas próprias licenças — ver
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
 ## Aviso
 
 Não afiliado à Wizards of the Coast nem ao D&D Beyond. "D&D" e "D&D Beyond" são
