@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Briefing, BriefingCharacter, Party, Quest, Recap } from '../types'
+import type { Briefing, BriefingCharacter, GuildOverride, Party, Quest, Recap } from '../types'
 import { EMPTY_BRIEFING } from '../types'
 
 const KEY = 'guild.briefing.v2'
@@ -15,6 +15,20 @@ export const newId = (): string => {
 
 function isObj(v: unknown): v is Record<string, unknown> {
   return !!v && typeof v === 'object'
+}
+
+/** Normaliza a guilda emissora inline de uma quest (override do briefing.json). */
+function normGuild(g: Record<string, unknown>): GuildOverride {
+  const s = (k: string) => (typeof g[k] === 'string' ? (g[k] as string) : '')
+  return {
+    name: s('name'),
+    motto: s('motto'),
+    signer: s('signer'),
+    role: s('role'),
+    signFont: s('signFont') || "'EB Garamond', serif",
+    ...(typeof g.glyph === 'string' ? { glyph: g.glyph } : {}),
+    ...(typeof g.variant === 'number' ? { variant: g.variant } : {}),
+  }
 }
 
 function normChar(c: Record<string, unknown>): BriefingCharacter {
@@ -46,7 +60,10 @@ export function normalizeBriefing(data: unknown): Briefing {
     ? (obj.quests as unknown[]).filter(isObj).map((q) => ({
         id: typeof q.id === 'string' && q.id ? q.id : newId(),
         title: typeof q.title === 'string' ? q.title : 'Quest',
-        status: q.status === 'pausada' || q.status === 'concluida' ? q.status : 'ativa',
+        status:
+          q.status === 'pausada' || q.status === 'concluida' || q.status === 'parcial'
+            ? q.status
+            : 'ativa',
         ...(typeof q.objective === 'string' ? { objective: q.objective } : {}),
         ...(typeof q.reward === 'string' ? { reward: q.reward } : {}),
         ...(typeof q.partyId === 'string' ? { partyId: q.partyId } : {}),
@@ -54,6 +71,9 @@ export function normalizeBriefing(data: unknown): Briefing {
           ? { adventurerIds: (q.adventurerIds as unknown[]).filter((x): x is string => typeof x === 'string') }
           : {}),
         ...(typeof q.notes === 'string' ? { notes: q.notes } : {}),
+        ...(isObj(q.guild) && typeof q.guild.name === 'string' && q.guild.name
+          ? { guild: normGuild(q.guild) }
+          : {}),
       })) as Quest[]
     : []
   const recaps = Array.isArray(obj.recaps)

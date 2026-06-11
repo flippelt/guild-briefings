@@ -67,12 +67,28 @@ export interface Party {
 
 export type QuestStatus = 'ativa' | 'pausada' | 'parcial' | 'concluida'
 
+/** Guilda emissora específica de uma quest (sobrepõe a escolha por seed). Mantém
+ *  conteúdo de campanha (ex.: guildas privadas) fora do código, no briefing.json. */
+export interface GuildOverride {
+  name: string
+  motto: string
+  signer: string
+  role: string
+  signFont: string
+  /** Símbolo do selo/carimbo (padrão ✦/★). */
+  glyph?: string
+  /** Forma da cera (1–6); se ausente, deriva do seed. */
+  variant?: number
+}
+
 export interface Quest {
   id: string
   title: string
   /** Objetivo/descrição curta. */
   objective?: string
   status: QuestStatus
+  /** Guilda emissora específica (sobrepõe a escolha por seed). */
+  guild?: GuildOverride
   /** Recompensa prometida. */
   reward?: string
   /** Party encarregada (id em Briefing.parties) — mostra o nome da equipe. */

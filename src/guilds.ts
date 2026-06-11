@@ -1,5 +1,7 @@
 /** Guildas/quest givers e seus lemas — usados no carimbo do Salão e no selo de
  *  cera da quest aberta. Escolha determinística pelo seed (id da quest). */
+import type { GuildOverride } from './types'
+
 export interface Guild {
   name: string
   motto: string
@@ -9,6 +11,8 @@ export interface Guild {
   role: string
   /** Fonte de assinatura (varia por quest giver). */
   signFont: string
+  /** Símbolo do selo/carimbo (padrão ✦ no selo, ★ no carimbo). */
+  glyph?: string
 }
 
 export const GUILDS: Guild[] = [
@@ -24,4 +28,15 @@ export const GUILDS: Guild[] = [
 export function guildForSeed(seed: string): { guild: Guild; variant: number } {
   const h = [...seed].reduce((a, c) => a + c.charCodeAt(0), 0)
   return { guild: GUILDS[h % GUILDS.length]!, variant: (h % 6) + 1 }
+}
+
+/** Guilda de uma quest: usa o override do briefing (se houver) ou escolhe pelo
+ *  seed (id). O override mantém guildas de campanha fora do código. */
+export function guildForQuest(q: { id: string; guild?: GuildOverride }): { guild: Guild; variant: number } {
+  const base = guildForSeed(q.id)
+  if (q.guild && q.guild.name) {
+    const { variant, ...g } = q.guild
+    return { guild: g, variant: variant ?? base.variant }
+  }
+  return base
 }

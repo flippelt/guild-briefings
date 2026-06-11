@@ -40,9 +40,7 @@ export function StatusView({ briefing }: { briefing: Briefing }) {
                   {who && <p className="note__who">⚔ {who}</p>}
                   {q.reward && <p className="note__reward">✦ {q.reward}</p>}
                   {q.status === 'pausada' && <span className="note__stamp note__stamp--hold">em espera</span>}
-                  {(q.status === 'concluida' || q.status === 'parcial') && (
-                    <QuestStamp seed={q.id} status={q.status} />
-                  )}
+                  {(q.status === 'concluida' || q.status === 'parcial') && <QuestStamp quest={q} />}
                 </article>
               )
             })}

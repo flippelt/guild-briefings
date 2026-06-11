@@ -1,25 +1,22 @@
-import { guildForSeed } from '../guilds'
+import type { Quest } from '../types'
+import { guildForQuest } from '../guilds'
 
 /**
- * Selo de cera (cera em CSS + camada SVG gravada em relevo): guilda emissora,
- * lema, "CONCLUÍDA" e enfeites — tudo no MESMO material da cera, "elevado" pelo
- * filtro #waxEmboss. Geometria ancorada no centro (60,60): guilda e lema com o
- * centro do texto sobre o MESMO raio (47) via dominant-baseline central, e
- * "CONCLUÍDA" exatamente no centro, dentro do anel interno. Vai no rodapé do
- * pergaminho da quest aberta. Guilda/forma variam pelo seed (id da quest).
+ * Selo de cera (cera em CSS + camada SVG gravada): guilda emissora, lema,
+ * "CONCLUÍDA"/"PARCIAL" e enfeites. Geometria ancorada no centro (60,60):
+ * guilda e lema com o centro do texto sobre o MESMO raio (47) via
+ * dominant-baseline central, e o rótulo exatamente no centro, dentro do anel
+ * interno. Vai no rodapé do pergaminho da quest aberta. Guilda vem do override
+ * da quest ou do seed; o enfeite lateral é o glifo da guilda (padrão ✦).
  */
-export function QuestSeal({
-  seed = '',
-  status = 'concluida',
-}: {
-  seed?: string
-  status?: 'concluida' | 'parcial'
-}) {
-  const { guild, variant } = guildForSeed(seed)
-  const label = status === 'parcial' ? 'PARCIAL' : 'CONCLUÍDA'
+export function QuestSeal({ quest }: { quest: Quest }) {
+  const { guild, variant } = guildForQuest(quest)
+  const parcial = quest.status === 'parcial'
+  const label = parcial ? 'PARCIAL' : 'CONCLUÍDA'
+  const glyph = guild.glyph ?? '✦'
   return (
     <span
-      className={`quest-seal wax--${variant}${status === 'parcial' ? ' quest-seal--parcial' : ''}`}
+      className={`quest-seal wax--${variant}${parcial ? ' quest-seal--parcial' : ''}`}
       role="img"
       aria-label={`${label} — ${guild.name}`}
     >
@@ -38,8 +35,8 @@ export function QuestSeal({
           <text className="wax__motto">
             <textPath href="#qs-bot" startOffset="50%">{guild.motto.toUpperCase()}</textPath>
           </text>
-          <text className="wax__fleur" x="13" y="60">✦</text>
-          <text className="wax__fleur" x="107" y="60">✦</text>
+          <text className="wax__fleur" x="13" y="60">{glyph}</text>
+          <text className="wax__fleur" x="107" y="60">{glyph}</text>
           <text className="wax__label" x="60" y="60">{label}</text>
         </g>
       </svg>

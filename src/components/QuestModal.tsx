@@ -1,6 +1,6 @@
 import type { Quest } from '../types'
 import { QUEST_STATUS_LABEL } from '../types'
-import { guildForSeed } from '../guilds'
+import { guildForQuest } from '../guilds'
 import { QuestSeal } from './QuestSeal'
 
 /**
@@ -9,7 +9,7 @@ import { QuestSeal } from './QuestSeal'
  * assinatura) com o selo de cera ao lado quando concluída.
  */
 export function QuestModal({ q, who, onClose }: { q: Quest; who: string; onClose: () => void }) {
-  const { guild } = guildForSeed(q.id)
+  const { guild } = guildForQuest(q)
   return (
     <div className="modal" onClick={onClose}>
       <div className="modal__panel quest-detail" onClick={(e) => e.stopPropagation()}>
@@ -26,9 +26,7 @@ export function QuestModal({ q, who, onClose }: { q: Quest; who: string; onClose
             quest giver no canto inferior direito (só o nome, em fonte de
             assinatura, sobre a linha; cargo/guilda em fonte normal) */}
         <div className="contract-foot">
-          {(q.status === 'concluida' || q.status === 'parcial') && (
-            <QuestSeal seed={q.id} status={q.status} />
-          )}
+          {(q.status === 'concluida' || q.status === 'parcial') && <QuestSeal quest={q} />}
           <div className="contract-sign">
             <span className="contract-sign__name" style={{ fontFamily: guild.signFont }}>{guild.signer}</span>
             <span className="contract-sign__role">{guild.signer} — {guild.role}</span>
