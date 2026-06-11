@@ -18,7 +18,9 @@ const TABS: { id: Tab; label: string; sigil: string }[] = [
 ]
 
 function exportBriefing(b: Briefing) {
-  const blob = new Blob([JSON.stringify(b, null, 2)], { type: 'application/json' })
+  // carimba uma versão nova → ao publicar, todos os aparelhos se atualizam
+  const out = { ...b, version: Date.now() }
+  const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url

@@ -114,6 +114,10 @@ export interface Briefing {
   crest?: 'fleur' | 'd20'
   /** Título exibido no boot (padrão "GUILD BRIEFINGS"). */
   bootTitle?: string
+  /** Versão dos dados (epoch ms). O app re-semeia do deploy quando a versão do
+   *  briefing.json publicado é maior que a guardada no localStorage. O export
+   *  carimba uma versão nova automaticamente. */
+  version?: number
 }
 
 export const EMPTY_BRIEFING: Briefing = { party: [], parties: [], quests: [], recaps: [] }

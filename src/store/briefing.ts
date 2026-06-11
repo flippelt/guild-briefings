@@ -3,7 +3,6 @@ import type { Briefing, BriefingCharacter, Party, Quest, Recap } from '../types'
 import { EMPTY_BRIEFING } from '../types'
 
 const KEY = 'guild.briefing.v2'
-const SEEDED_KEY = 'guild.seeded.v2'
 
 /** Modo demonstração (ativado no build do GitHub Pages via VITE_DEMO): nada é
  *  salvo e a party demo recarrega a cada acesso. */
@@ -68,7 +67,8 @@ export function normalizeBriefing(data: unknown): Briefing {
   const guildName = typeof obj.guildName === 'string' ? obj.guildName : undefined
   const crest = obj.crest === 'd20' ? 'd20' : undefined
   const bootTitle = typeof obj.bootTitle === 'string' && obj.bootTitle.trim() ? obj.bootTitle.trim() : undefined
-  return { party, parties, quests, recaps, ...(guildName ? { guildName } : {}), ...(crest ? { crest } : {}), ...(bootTitle ? { bootTitle } : {}) }
+  const version = typeof obj.version === 'number' ? obj.version : 0
+  return { party, parties, quests, recaps, version, ...(guildName ? { guildName } : {}), ...(crest ? { crest } : {}), ...(bootTitle ? { bootTitle } : {}) }
 }
 
 function load(): Briefing {
@@ -93,34 +93,28 @@ export function useBriefing() {
     }
   }, [briefing])
 
-  // Modo demo: SEMPRE recarrega a party demo (reseta a cada acesso, nada salvo).
-  // Modo normal: seed na 1ª visita (deploys privados põem briefing.json na build).
+  // Carrega o briefing.json do deploy a cada início e adota se:
+  //  - o storage local está vazio (1ª visita), OU
+  //  - a versão publicada é mais nova que a guardada (auto-refresh entre
+  //    aparelhos: publicar dados novos atualiza todos, sem limpar localStorage).
+  // Caso contrário, mantém o estado local (edições não publicadas são preservadas).
+  // No modo demo, o estado começa vazio → sempre adota o briefing.json.
   useEffect(() => {
-    if (!DEMO_MODE) {
-      if (localStorage.getItem(SEEDED_KEY)) return
-      const cur = load()
-      if (cur.party.length || cur.quests.length || cur.recaps.length) {
-        localStorage.setItem(SEEDED_KEY, '1')
-        return
-      }
-    }
     let cancelled = false
     fetch(`${import.meta.env.BASE_URL}briefing.json`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (cancelled || data == null) return
         const seed = normalizeBriefing(data)
-        if (seed.party.length || seed.quests.length || seed.recaps.length) setBriefing(seed)
+        const hasContent = seed.party.length || seed.quests.length || seed.recaps.length
+        if (!hasContent) return
+        setBriefing((cur) => {
+          const curEmpty = !(cur.party.length || cur.quests.length || cur.recaps.length)
+          const newer = (seed.version ?? 0) > (cur.version ?? 0)
+          return curEmpty || newer ? seed : cur
+        })
       })
       .catch(() => {})
-      .finally(() => {
-        if (DEMO_MODE) return
-        try {
-          localStorage.setItem(SEEDED_KEY, '1')
-        } catch {
-          /* ignora */
-        }
-      })
     return () => {
       cancelled = true
     }
