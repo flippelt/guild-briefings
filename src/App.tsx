@@ -117,6 +117,7 @@ export function App() {
             quests={briefing.quests}
             parties={briefing.parties}
             party={briefing.party}
+            guilds={briefing.guilds}
             onAdd={b.addQuest}
             onUpdate={b.updateQuest}
             onRemove={b.removeQuest}

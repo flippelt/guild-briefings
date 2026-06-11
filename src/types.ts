@@ -134,6 +134,9 @@ export interface Briefing {
    *  briefing.json publicado é maior que a guardada no localStorage. O export
    *  carimba uma versão nova automaticamente. */
   version?: number
+  /** Facções/guildas próprias da campanha (além das padrão), selecionáveis como
+   *  emissoras de uma quest. Mantém lore privada fora do código. */
+  guilds?: GuildOverride[]
 }
 
 export const EMPTY_BRIEFING: Briefing = { party: [], parties: [], quests: [], recaps: [] }

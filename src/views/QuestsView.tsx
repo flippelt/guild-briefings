@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { BriefingCharacter, Party, Quest } from '../types'
+import type { BriefingCharacter, GuildOverride, Party, Quest } from '../types'
 import { QuestCard } from '../components/QuestCard'
 import { newId } from '../store/briefing'
 
@@ -7,6 +7,7 @@ export function QuestsView({
   quests,
   parties,
   party,
+  guilds,
   onAdd,
   onUpdate,
   onRemove,
@@ -14,6 +15,7 @@ export function QuestsView({
   quests: Quest[]
   parties: Party[]
   party: BriefingCharacter[]
+  guilds?: GuildOverride[]
   onAdd: (q: Quest) => void
   onUpdate: (id: string, patch: Partial<Quest>) => void
   onRemove: (id: string) => void
@@ -51,13 +53,13 @@ export function QuestsView({
           <h2 className="section-label">Ativas ({active.length})</h2>
           <div className="cards">
             {active.length === 0 ? <p className="muted">Nenhuma quest ativa.</p> :
-              active.map((q) => <QuestCard key={q.id} q={q} parties={parties} party={party} onUpdate={(p) => onUpdate(q.id, p)} onRemove={() => onRemove(q.id)} />)}
+              active.map((q) => <QuestCard key={q.id} q={q} parties={parties} party={party} guilds={guilds} onUpdate={(p) => onUpdate(q.id, p)} onRemove={() => onRemove(q.id)} />)}
           </div>
           {others.length > 0 && (
             <>
               <h2 className="section-label">Em espera / parciais / concluídas ({others.length})</h2>
               <div className="cards">
-                {others.map((q) => <QuestCard key={q.id} q={q} parties={parties} party={party} onUpdate={(p) => onUpdate(q.id, p)} onRemove={() => onRemove(q.id)} />)}
+                {others.map((q) => <QuestCard key={q.id} q={q} parties={parties} party={party} guilds={guilds} onUpdate={(p) => onUpdate(q.id, p)} onRemove={() => onRemove(q.id)} />)}
               </div>
             </>
           )}

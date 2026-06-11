@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { BriefingCharacter, Party, Quest, QuestStatus } from '../types'
+import type { BriefingCharacter, GuildOverride, Party, Quest, QuestStatus } from '../types'
 import { QUEST_STATUS_LABEL, QUEST_STATUSES, questAssignee } from '../types'
 import { GUILDS } from '../guilds'
 
@@ -7,17 +7,21 @@ export function QuestCard({
   q,
   parties,
   party,
+  guilds,
   onUpdate,
   onRemove,
 }: {
   q: Quest
   parties: Party[]
   party: BriefingCharacter[]
+  guilds?: GuildOverride[]
   onUpdate: (patch: Partial<Quest>) => void
   onRemove: () => void
 }) {
   const [editing, setEditing] = useState(false)
   const who = questAssignee(q, parties, party)
+  // padrão + facções de campanha (briefing.guilds); escolher define quem assina/sela
+  const allGuilds: GuildOverride[] = [...GUILDS, ...(guilds ?? [])]
 
   const setParty = (pid: string) =>
     onUpdate({ partyId: pid || undefined, ...(pid ? { adventurerIds: undefined } : {}) })
@@ -65,15 +69,15 @@ export function QuestCard({
             onChange={(e) => {
               const name = e.target.value
               if (!name) return onUpdate({ guild: undefined })
-              const g = GUILDS.find((x) => x.name === name)
-              if (g) onUpdate({ guild: { name: g.name, motto: g.motto, signer: g.signer, role: g.role, signFont: g.signFont, ...(g.glyph ? { glyph: g.glyph } : {}) } })
+              const g = allGuilds.find((x) => x.name === name)
+              if (g) onUpdate({ guild: { ...g } })
             }}
           >
             <option value="">(automática — escolhida pelo id)</option>
-            {q.guild && !GUILDS.some((g) => g.name === q.guild!.name) && (
+            {q.guild && !allGuilds.some((g) => g.name === q.guild!.name) && (
               <option value={q.guild.name}>{q.guild.name} — {q.guild.signer} (personalizada)</option>
             )}
-            {GUILDS.map((g) => (
+            {allGuilds.map((g) => (
               <option key={g.name} value={g.name}>{g.name} — {g.signer}</option>
             ))}
           </select>
