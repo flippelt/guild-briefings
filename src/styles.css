@@ -534,6 +534,13 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 .poster__story { width: 100%; text-align: left; margin-top: 4px; }
 .poster__story-text { color: var(--parch-ink); line-height: 1.6; white-space: pre-wrap; font-size: 1.05rem; }
 .poster__story .field { margin-bottom: 8px; }
+/* Modal grande: o pergaminho fica FIXO (não rola o painel todo) e só a história
+   rola por dentro — assim o texto longo não escapa da cera. */
+.poster--lg { overflow: hidden; }
+.poster--lg .poster__story {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  padding-right: 8px; overscroll-behavior: contain;
+}
 .modal__panel input, .modal__panel textarea { background: rgba(255, 251, 238, 0.72); color: var(--parch-ink); border-color: var(--parch-line); }
 .modal__panel .ghost { color: var(--parch-dim); border-color: var(--parch-line); }
 .modal__panel .ghost:hover { color: var(--oxblood); border-color: var(--oxblood); }
