@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { BriefingCharacter, Party, Quest, QuestStatus } from '../types'
 import { QUEST_STATUS_LABEL, QUEST_STATUSES, questAssignee } from '../types'
+import { GUILDS } from '../guilds'
 
 export function QuestCard({
   q,
@@ -57,6 +58,26 @@ export function QuestCard({
             </div>
           </div>
         )}
+        <label className="field">
+          <span>Guilda emissora (assina/sela o contrato)</span>
+          <select
+            value={q.guild?.name ?? ''}
+            onChange={(e) => {
+              const name = e.target.value
+              if (!name) return onUpdate({ guild: undefined })
+              const g = GUILDS.find((x) => x.name === name)
+              if (g) onUpdate({ guild: { name: g.name, motto: g.motto, signer: g.signer, role: g.role, signFont: g.signFont, ...(g.glyph ? { glyph: g.glyph } : {}) } })
+            }}
+          >
+            <option value="">(automática — escolhida pelo id)</option>
+            {q.guild && !GUILDS.some((g) => g.name === q.guild!.name) && (
+              <option value={q.guild.name}>{q.guild.name} — {q.guild.signer} (personalizada)</option>
+            )}
+            {GUILDS.map((g) => (
+              <option key={g.name} value={g.name}>{g.name} — {g.signer}</option>
+            ))}
+          </select>
+        </label>
         <select value={q.status} onChange={(e) => onUpdate({ status: e.target.value as QuestStatus })}>
           {QUEST_STATUSES.map((s) => <option key={s} value={s}>{QUEST_STATUS_LABEL[s]}</option>)}
         </select>
