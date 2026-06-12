@@ -14,7 +14,9 @@ export default async () => {
   } catch {
     /* sem blob / store indisponível → o app usa o estático */
   }
-  return new Response('', { status: 204 })
+  // 204 é "null body status": o corpo precisa ser null (passar '' lança no
+  // construtor de Response → 502).
+  return new Response(null, { status: 204 })
 }
 
 export const config = { path: '/api/briefing' }
