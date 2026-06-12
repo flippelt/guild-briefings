@@ -23,6 +23,7 @@ export function RecapCard({
     return (
       <article className="recap recap--editing">
         <input defaultValue={r.title} onChange={(e) => onUpdate({ title: e.target.value })} placeholder="Título" />
+        <input defaultValue={r.author ?? ''} onChange={(e) => onUpdate({ author: e.target.value || undefined })} placeholder="Autor (personagem)" />
         <div className="row">
           <input defaultValue={r.session ?? ''} onChange={(e) => onUpdate({ session: e.target.value || undefined })} placeholder="Sessão" style={{ flex: 1 }} />
           <input type="date" defaultValue={r.date ?? ''} onChange={(e) => onUpdate({ date: e.target.value || undefined })} aria-label="Data" style={{ flex: 1 }} />
@@ -45,6 +46,7 @@ export function RecapCard({
         )}
       </div>
       <p className="recap__body">{r.body}</p>
+      {r.author && <p className="recap__author">✒ por {r.author}</p>}
       <div className="recap__actions">
         <button className="ghost" onClick={() => setEditing(true)}>editar</button>
       </div>

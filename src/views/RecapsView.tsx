@@ -20,6 +20,7 @@ export function RecapsView({
   onPublish?: () => Promise<{ ok: boolean; error?: string }>
 }) {
   const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
   const [session, setSession] = useState('')
   const [date, setDate] = useState('')
   const [body, setBody] = useState('')
@@ -30,10 +31,12 @@ export function RecapsView({
       id: newId(),
       title: title.trim(),
       body: body.trim(),
+      ...(author.trim() ? { author: author.trim() } : {}),
       ...(session.trim() ? { session: session.trim() } : {}),
       ...(date ? { date } : {}),
     })
     setTitle('')
+    setAuthor('')
     setSession('')
     setDate('')
     setBody('')
@@ -44,6 +47,9 @@ export function RecapsView({
       <div className="quick-add quick-add--col">
         <div className="row">
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título da crônica…" style={{ flex: 2 }} />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Autor (personagem)" style={{ flex: 1 }} />
+        </div>
+        <div className="row">
           <input value={session} onChange={(e) => setSession(e.target.value)} placeholder="Sessão" style={{ flex: 1 }} />
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Data" style={{ flex: 1 }} />
         </div>
