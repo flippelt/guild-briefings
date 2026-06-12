@@ -65,7 +65,7 @@ export interface Party {
 
 // ---------- Quests ----------
 
-export type QuestStatus = 'ativa' | 'pausada' | 'parcial' | 'concluida'
+export type QuestStatus = 'ativa' | 'pausada' | 'parcial' | 'concluida' | 'falhou'
 
 /** Guilda emissora específica de uma quest (sobrepõe a escolha por seed). Mantém
  *  conteúdo de campanha (ex.: guildas privadas) fora do código, no briefing.json. */
@@ -103,16 +103,19 @@ export const QUEST_STATUS_LABEL: Record<QuestStatus, string> = {
   pausada: 'Em espera',
   parcial: 'Parcial',
   concluida: 'Concluída',
+  falhou: 'Falhou',
 }
 
-export const QUEST_STATUSES: QuestStatus[] = ['ativa', 'pausada', 'parcial', 'concluida']
+export const QUEST_STATUSES: QuestStatus[] = ['ativa', 'pausada', 'parcial', 'concluida', 'falhou']
 
 // ---------- Crônicas / recontagens ----------
 
 export interface Recap {
   id: string
   title: string
-  /** Data/sessão (texto livre: "Sessão 12" ou "14 Mirtul"). */
+  /** Sessão (texto livre: "Sessão 12", "Arco da Hidra"…). */
+  session?: string
+  /** Data do calendário, ISO `YYYY-MM-DD` (seletor de data). */
   date?: string
   body: string
 }

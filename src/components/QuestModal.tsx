@@ -26,7 +26,7 @@ export function QuestModal({ q, who, onClose }: { q: Quest; who: string; onClose
             quest giver no canto inferior direito (só o nome, em fonte de
             assinatura, sobre a linha; cargo/guilda em fonte normal) */}
         <div className="contract-foot">
-          {(q.status === 'concluida' || q.status === 'parcial') && <QuestSeal quest={q} />}
+          {(q.status === 'concluida' || q.status === 'parcial' || q.status === 'falhou') && <QuestSeal quest={q} />}
           <div className="contract-sign">
             <span className="contract-sign__name" style={{ fontFamily: guild.signFont }}>{guild.signer}</span>
             <span className="contract-sign__role">{guild.signer} — {guild.role}</span>

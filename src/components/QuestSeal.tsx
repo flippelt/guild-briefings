@@ -11,12 +11,12 @@ import { guildForQuest } from '../guilds'
  */
 export function QuestSeal({ quest }: { quest: Quest }) {
   const { guild, variant } = guildForQuest(quest)
-  const parcial = quest.status === 'parcial'
-  const label = parcial ? 'PARCIAL' : 'CONCLUÍDA'
+  const mod = quest.status === 'parcial' ? 'parcial' : quest.status === 'falhou' ? 'falhou' : ''
+  const label = mod === 'parcial' ? 'PARCIAL' : mod === 'falhou' ? 'FALHOU' : 'CONCLUÍDA'
   const glyph = guild.glyph ?? '✦'
   return (
     <span
-      className={`quest-seal wax--${variant}${parcial ? ' quest-seal--parcial' : ''}`}
+      className={`quest-seal wax--${variant}${mod ? ` quest-seal--${mod}` : ''}`}
       role="img"
       aria-label={`${label} — ${guild.name}`}
     >

@@ -61,7 +61,7 @@ export function normalizeBriefing(data: unknown): Briefing {
         id: typeof q.id === 'string' && q.id ? q.id : newId(),
         title: typeof q.title === 'string' ? q.title : 'Quest',
         status:
-          q.status === 'pausada' || q.status === 'concluida' || q.status === 'parcial'
+          q.status === 'pausada' || q.status === 'concluida' || q.status === 'parcial' || q.status === 'falhou'
             ? q.status
             : 'ativa',
         ...(typeof q.objective === 'string' ? { objective: q.objective } : {}),
@@ -76,13 +76,26 @@ export function normalizeBriefing(data: unknown): Briefing {
           : {}),
       })) as Quest[]
     : []
+  const isISODate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s)
   const recaps = Array.isArray(obj.recaps)
-    ? (obj.recaps as unknown[]).filter(isObj).map((r) => ({
-        id: typeof r.id === 'string' && r.id ? r.id : newId(),
-        title: typeof r.title === 'string' ? r.title : 'Crônica',
-        body: typeof r.body === 'string' ? r.body : '',
-        ...(typeof r.date === 'string' ? { date: r.date } : {}),
-      })) as Recap[]
+    ? (obj.recaps as unknown[]).filter(isObj).map((r) => {
+        const rawDate = typeof r.date === 'string' ? r.date : undefined
+        let session = typeof r.session === 'string' ? r.session : undefined
+        let date: string | undefined
+        // Migração: o campo antigo `date` era texto livre ("Sessão/data"). Datas
+        // ISO viram o seletor; o resto vira `session` (se ainda não houver).
+        if (rawDate) {
+          if (isISODate(rawDate)) date = rawDate
+          else if (!session) session = rawDate
+        }
+        return {
+          id: typeof r.id === 'string' && r.id ? r.id : newId(),
+          title: typeof r.title === 'string' ? r.title : 'Crônica',
+          body: typeof r.body === 'string' ? r.body : '',
+          ...(session ? { session } : {}),
+          ...(date ? { date } : {}),
+        }
+      }) as Recap[]
     : []
   const guildName = typeof obj.guildName === 'string' ? obj.guildName : undefined
   const crest = obj.crest === 'd20' ? 'd20' : undefined

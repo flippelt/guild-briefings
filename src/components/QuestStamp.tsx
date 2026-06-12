@@ -11,12 +11,12 @@ import { guildForQuest } from '../guilds'
  */
 export function QuestStamp({ quest }: { quest: Quest }) {
   const { guild } = guildForQuest(quest)
-  const parcial = quest.status === 'parcial'
-  const label = parcial ? 'PARCIAL' : 'CONCLUÍDA'
+  const mod = quest.status === 'parcial' ? 'parcial' : quest.status === 'falhou' ? 'falhou' : ''
+  const label = mod === 'parcial' ? 'PARCIAL' : mod === 'falhou' ? 'FALHOU' : 'CONCLUÍDA'
   const glyph = guild.glyph ?? '★'
   return (
     <svg
-      className={`qstamp${parcial ? ' qstamp--parcial' : ''}`}
+      className={`qstamp${mod ? ` qstamp--${mod}` : ''}`}
       viewBox="0 0 100 100"
       role="img"
       aria-label={`${label} — ${guild.name}`}
