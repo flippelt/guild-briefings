@@ -194,41 +194,19 @@ export function useBriefing() {
     }
   }, [briefing])
 
-  // Carrega o briefing.json do deploy a cada início e adota se:
-  //  - o storage local está vazio (1ª visita), OU
-  //  - a versão publicada é mais nova que a guardada (auto-refresh entre
-  //    aparelhos: publicar dados novos atualiza todos, sem limpar localStorage).
-  // Caso contrário, mantém o estado local (edições não publicadas são preservadas).
-  // No modo demo, o estado começa vazio → sempre adota o briefing.json.
-  useEffect(() => {
-    let cancelled = false
-    fetchSeedJson()
-      .then((data) => {
-        if (cancelled || data == null) return
-        const seed = normalizeBriefing(data)
-        const hasContent = seed.party.length || seed.quests.length || seed.recaps.length
-        if (!hasContent) return
-        setBriefing((cur) => {
-          const curEmpty = !(cur.party.length || cur.quests.length || cur.recaps.length)
-          if (curEmpty) return seed
-          const newer = (seed.version ?? 0) > (cur.version ?? 0)
-          // Mescla em vez de substituir: traz as novidades publicadas mas
-          // preserva o que foi adicionado localmente e ainda não publicado.
-          return newer ? mergeBriefing(cur, seed) : cur
-        })
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const patch = useCallback((p: Partial<Briefing>) => setBriefing((b) => ({ ...b, ...p })), [])
-
-  // --- Publicação na mesa (backend opcional) + sync de personagens ---
+  // briefingRef sempre aponta pro estado atual (usado nas publicações async).
   const briefingRef = useRef(briefing)
   briefingRef.current = briefing
-  const autoPublishRef = useRef(false)
+  // Gating da sincronização ao vivo (mesa):
+  //  - adoptingRef: o próximo setBriefing veio de adoção/bump de versão → não republica.
+  //  - pendingRef: há publicação agendada/em curso → o polling não adota por cima.
+  //  - publishOptOutRef: usuário cancelou a senha → não insiste nesta sessão.
+  const adoptingRef = useRef(false)
+  const pendingRef = useRef(false)
+  const publishOptOutRef = useRef(false)
+  const publishTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  const patch = useCallback((p: Partial<Briefing>) => setBriefing((b) => ({ ...b, ...p })), [])
 
   const postPublish = useCallback(
     async (b: Briefing, opts?: { silent?: boolean }): Promise<{ ok: boolean; error?: string }> => {
@@ -252,6 +230,8 @@ export function useBriefing() {
         }
         if (!r.ok) return { ok: false, error: `Falha ao publicar (${r.status}).` }
         localStorage.setItem(PUBLISH_KEY_STORE, key)
+        // o bump de versão é uma "adoção" (não deve disparar nova publicação)
+        adoptingRef.current = true
         setBriefing((cur) => ({ ...cur, version }))
         return { ok: true }
       } catch {
@@ -261,19 +241,79 @@ export function useBriefing() {
     [],
   )
 
-  // Após import/sync, publica em silêncio (só se já houver senha salva).
+  // Sincroniza com o publicado: adota na 1ª visita e quando a versão é mais nova.
+  // Na mesa (CAN_PUBLISH) substitui o estado (deleções propagam) e faz polling
+  // periódico; no app público mescla (preserva edição local) e roda só no início.
   useEffect(() => {
-    if (!autoPublishRef.current) return
-    autoPublishRef.current = false
-    if (CAN_PUBLISH) void postPublish(briefing, { silent: true })
+    if (DEMO_MODE) {
+      let off = false
+      fetchSeedJson()
+        .then((data) => {
+          if (off || data == null) return
+          const seed = normalizeBriefing(data)
+          if (seed.party.length || seed.quests.length || seed.recaps.length) {
+            adoptingRef.current = true
+            setBriefing(seed)
+          }
+        })
+        .catch(() => {})
+      return () => {
+        off = true
+      }
+    }
+    let cancelled = false
+    const sync = async () => {
+      if (pendingRef.current) return // não adota por cima de publicação pendente
+      const data = await fetchSeedJson()
+      if (cancelled || data == null) return
+      const seed = normalizeBriefing(data)
+      const hasContent = seed.party.length || seed.quests.length || seed.recaps.length
+      if (!hasContent) return
+      setBriefing((cur) => {
+        const curEmpty = !(cur.party.length || cur.quests.length || cur.recaps.length)
+        if (curEmpty) {
+          adoptingRef.current = true
+          return seed
+        }
+        if ((seed.version ?? 0) <= (cur.version ?? 0)) return cur
+        adoptingRef.current = true
+        // mesa: substitui (deleções propagam); público: mescla (preserva local)
+        return CAN_PUBLISH ? seed : mergeBriefing(cur, seed)
+      })
+    }
+    void sync()
+    const iv = CAN_PUBLISH ? setInterval(() => void sync(), 20_000) : undefined
+    return () => {
+      cancelled = true
+      if (iv) clearInterval(iv)
+    }
+  }, [])
+
+  // Auto-publica (debounced) qualquer alteração local na mesa — adicionar, editar
+  // ou deletar atualiza todos os aparelhos, sem botão "publicar" à parte. Adoções
+  // e o bump de versão pós-publicação são ignorados (adoptingRef).
+  useEffect(() => {
+    if (DEMO_MODE || !CAN_PUBLISH) return
+    if (adoptingRef.current) {
+      adoptingRef.current = false
+      return
+    }
+    if (publishOptOutRef.current) return
+    pendingRef.current = true
+    clearTimeout(publishTimerRef.current)
+    publishTimerRef.current = setTimeout(() => {
+      void postPublish(briefingRef.current).then((res) => {
+        pendingRef.current = false
+        if (res && !res.ok && res.error === 'cancelado') publishOptOutRef.current = true
+      })
+    }, 1000)
+    return () => clearTimeout(publishTimerRef.current)
   }, [briefing, postPublish])
 
   return {
     briefing,
-    canPublish: CAN_PUBLISH,
-    /** Publica o estado atual pra todos os aparelhos (pede senha na 1ª vez). */
-    publish: useCallback(() => postPublish(briefingRef.current), [postPublish]),
-    /** Importa um personagem (atualiza se já existir o mesmo ddbId) e auto-publica. */
+    /** Importa um personagem (atualiza se já existir o mesmo ddbId). A
+     *  publicação pra todos sai sozinha (auto-publish debounced). */
     importCharacter: useCallback((c: BriefingCharacter) => {
       setBriefing((b) => {
         const exists = c.ddbId ? b.party.some((x) => x.ddbId === c.ddbId) : false
@@ -285,9 +325,9 @@ export function useBriefing() {
         }
         return { ...b, party: [...b.party, c] }
       })
-      autoPublishRef.current = true
     }, []),
-    /** Re-busca os personagens do D&D Beyond (HP, nível…) e auto-publica. */
+    /** Re-busca os personagens do D&D Beyond (HP, nível…). A publicação pra
+     *  todos sai sozinha (auto-publish debounced). */
     syncDdb: useCallback(async (): Promise<{ updated: number; failed: string[] }> => {
       const cur = briefingRef.current
       const ddbIdOf = (c: BriefingCharacter) => c.ddbId || (c.id.startsWith('ddb-') ? c.id.slice(4) : '')
@@ -307,12 +347,10 @@ export function useBriefing() {
           const f = fresh[x.id]
           return f ? { ...f, id: x.id, partyId: x.partyId, notes: x.notes ?? f.notes } : x
         })
-        const next: Briefing = { ...cur, party }
-        setBriefing(next)
-        if (CAN_PUBLISH) await postPublish(next, { silent: true })
+        setBriefing({ ...cur, party })
       }
       return { updated, failed }
-    }, [postPublish]),
+    }, []),
     setGuildName: useCallback((name: string) => patch({ guildName: name || undefined }), [patch]),
 
     addCharacter: useCallback((c: BriefingCharacter) => setBriefing((b) => ({ ...b, party: [...b.party, c] })), []),
