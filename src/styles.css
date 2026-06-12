@@ -281,6 +281,7 @@ body {
 }
 .quest--ativa { border-left-color: var(--ember); }
 .quest--concluida { border-left-color: var(--green); opacity: 0.72; }
+.quest--falhou { border-left-color: #9a5247; opacity: 0.72; }
 .quest--pausada { border-left-color: var(--ink-dim); }
 .quest__head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .quest__title { font-family: var(--display); font-size: 1.1rem; margin: 0; color: var(--ink); }
@@ -298,6 +299,7 @@ body {
 .badge--pausada { color: var(--ink-dim); }
 .badge--parcial { color: var(--gold); }
 .badge--concluida { color: var(--green); }
+.badge--falhou { color: #c0695a; }
 
 /* ============ Crônicas / recaps ============ */
 .chronicle { display: flex; flex-direction: column; gap: 14px; position: relative; padding-left: 18px; }
@@ -328,6 +330,9 @@ body {
 /* ============ Salão = quadro de avisos (cortiça) ============ */
 .board {
   position: relative;
+  /* contém o empilhamento dos bilhetes (z-index) dentro do quadro, pra nada
+     "escapar" por cima do rodapé/ações */
+  isolation: isolate;
   background:
     radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.06) 0 1px, transparent 1px) 0 0 / 13px 13px,
     radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px) 0 0 / 17px 17px,
@@ -380,6 +385,9 @@ body {
   text-decoration-color: rgba(154, 106, 28, 0.65);
 }
 .note--parcial .note__obj, .note--parcial .note__reward { opacity: 0.82; }
+.note--falhou { filter: saturate(0.6) brightness(0.93); }
+.note--falhou .note__title { text-decoration: line-through; text-decoration-color: rgba(120, 60, 50, 0.6); }
+.note--falhou .note__obj, .note--falhou .note__reward { opacity: 0.6; }
 
 /* tachinha de latão no topo do bilhete/etiqueta */
 .note__pin, .namecard__pin {
@@ -440,8 +448,24 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 .field--abil > span { text-align: center; }
 
 .app__footer {
+  position: relative; z-index: 30;
   display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line);
+}
+
+/* Mobile: as ações (exportar/limpar) viram uma barra fixa no rodapé da tela,
+   pra não sumirem atrás do quadro ao rolar até o fim. */
+@media (max-width: 760px) {
+  .app { padding-bottom: 16px; }
+  .app__footer {
+    position: sticky; bottom: 0; z-index: 40;
+    margin: 24px -16px 0;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, rgba(22, 14, 9, 0.82), rgba(22, 14, 9, 0.97));
+    backdrop-filter: blur(5px);
+    border-top: 1px solid var(--line);
+  }
+  .app__footer .muted { font-size: 0.72rem; flex: 1 1 100%; }
 }
 
 /* ============ Superfícies em pergaminho (tinta escura) ============ */
@@ -464,9 +488,11 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 
 .quest--pausada { border-left-color: var(--parch-line); }
 .quest--concluida { border-left-color: #5f8a44; }
+.quest--falhou { border-left-color: #8a4a3a; }
 .badge--pausada { color: var(--parch-dim); }
 .badge--parcial { color: var(--sepia); }
 .badge--concluida { color: #4f7a3a; }
+.badge--falhou { color: #8a4a3a; }
 
 /* Campos em edição dentro de superfícies de pergaminho: papel claro. */
 .card input, .card textarea, .card select,
@@ -556,7 +582,7 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
   position: relative; display: block;
   width: 128px; height: 128px;
   margin: 6px auto;
-  transform: rotate(-4deg);
+  transform: rotate(-9deg);
   pointer-events: none;
   filter: drop-shadow(0 4px 9px rgba(0, 0, 0, 0.5));
 }
@@ -599,12 +625,23 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 .quest-seal--parcial .wax__label,
 .quest-seal--parcial .wax__fleur { fill: #4a3008; }
 .quest-seal--parcial .wax__ring2 { stroke: #4a3008; }
+/* Falhou: cera carvão/cinza (fracasso) */
+.quest-seal--falhou .wax__blob {
+  background:
+    radial-gradient(ellipse 55% 42% at 38% 30%, rgba(214, 214, 214, 0.26), rgba(214, 214, 214, 0) 55%),
+    radial-gradient(circle at 52% 48%, #5a534d 0%, #3a342f 60%, #211d1a 100%);
+}
+.quest-seal--falhou .wax__ring,
+.quest-seal--falhou .wax__motto,
+.quest-seal--falhou .wax__label,
+.quest-seal--falhou .wax__fleur { fill: #1d1a17; }
+.quest-seal--falhou .wax__ring2 { stroke: #1d1a17; }
 
 /* ============ Carimbo de tinta do Salão (selo de borracha) ============ */
 .note__open { position: absolute; inset: 0; z-index: 3; background: none; border: none; padding: 0; margin: 0; cursor: pointer; }
 .qstamp {
   position: absolute; right: -2px; bottom: -4px; width: 118px; height: 118px;
-  transform: rotate(-5deg); opacity: 0.9; pointer-events: none;
+  transform: rotate(-13deg); opacity: 0.9; pointer-events: none;
 }
 /* falhas leves de tinta (grunge de carimbo) */
 .qstamp__ink { filter: url(#stampInk); }
@@ -624,6 +661,9 @@ button.danger, button.ghost.danger { color: var(--danger); border-color: rgba(21
 /* Parcial: tinta sépia/âmbar (em vez do vermelho oxblood) */
 .qstamp--parcial .qstamp__ring, .qstamp--parcial .qstamp__bar { stroke: #9a6a1c; }
 .qstamp--parcial .qstamp__arc, .qstamp--parcial .qstamp__star, .qstamp--parcial .qstamp__label { fill: #9a6a1c; }
+/* Falhou: tinta carvão/fuligem (fracasso) */
+.qstamp--falhou .qstamp__ring, .qstamp--falhou .qstamp__bar { stroke: #463f39; }
+.qstamp--falhou .qstamp__arc, .qstamp--falhou .qstamp__star, .qstamp--falhou .qstamp__label { fill: #463f39; }
 
 /* ============ Quest aberta (pergaminho do contrato) ============ */
 .quest-detail { padding: 30px 22px 22px; text-align: left; }

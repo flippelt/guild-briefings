@@ -15,6 +15,7 @@ export function RecapsView({
   onRemove: (id: string) => void
 }) {
   const [title, setTitle] = useState('')
+  const [session, setSession] = useState('')
   const [date, setDate] = useState('')
   const [body, setBody] = useState('')
 
@@ -24,9 +25,11 @@ export function RecapsView({
       id: newId(),
       title: title.trim(),
       body: body.trim(),
-      ...(date.trim() ? { date: date.trim() } : {}),
+      ...(session.trim() ? { session: session.trim() } : {}),
+      ...(date ? { date } : {}),
     })
     setTitle('')
+    setSession('')
     setDate('')
     setBody('')
   }
@@ -36,7 +39,8 @@ export function RecapsView({
       <div className="quick-add quick-add--col">
         <div className="row">
           <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título da crônica…" style={{ flex: 2 }} />
-          <input value={date} onChange={(e) => setDate(e.target.value)} placeholder="Sessão / data" style={{ flex: 1 }} />
+          <input value={session} onChange={(e) => setSession(e.target.value)} placeholder="Sessão" style={{ flex: 1 }} />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Data" style={{ flex: 1 }} />
         </div>
         <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={3} placeholder="O que aconteceu na sessão…" />
         <button onClick={add} disabled={!title.trim() || !body.trim()}>+ crônica</button>
