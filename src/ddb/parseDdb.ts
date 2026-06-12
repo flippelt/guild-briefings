@@ -143,6 +143,7 @@ export function parseDdbCharacter(raw: unknown): BriefingCharacter {
 
   return {
     id: newId(),
+    ...(c.id != null ? { ddbId: String(c.id) } : {}),
     name,
     ...(parseRace(c) ? { race: parseRace(c) } : {}),
     classes,

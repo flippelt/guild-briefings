@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { BriefingCharacter, GuildOverride, Party, Quest } from '../types'
 import { QuestCard } from '../components/QuestCard'
+import { PublishButton } from '../components/PublishButton'
 import { newId } from '../store/briefing'
 
 export function QuestsView({
@@ -11,6 +12,8 @@ export function QuestsView({
   onAdd,
   onUpdate,
   onRemove,
+  canPublish,
+  onPublish,
 }: {
   quests: Quest[]
   parties: Party[]
@@ -19,6 +22,8 @@ export function QuestsView({
   onAdd: (q: Quest) => void
   onUpdate: (id: string, patch: Partial<Quest>) => void
   onRemove: (id: string) => void
+  canPublish?: boolean
+  onPublish?: () => Promise<{ ok: boolean; error?: string }>
 }) {
   const [title, setTitle] = useState('')
   const [objective, setObjective] = useState('')
@@ -44,6 +49,7 @@ export function QuestsView({
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Nova quest…" onKeyDown={(e) => e.key === 'Enter' && add()} />
         <input value={objective} onChange={(e) => setObjective(e.target.value)} placeholder="Objetivo (opcional)" />
         <button onClick={add} disabled={!title.trim()}>+ quest</button>
+        {canPublish && onPublish && <PublishButton onPublish={onPublish} />}
       </div>
 
       {quests.length === 0 ? (

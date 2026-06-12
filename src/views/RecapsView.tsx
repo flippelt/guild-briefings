@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Recap } from '../types'
 import { RecapCard } from '../components/RecapCard'
+import { PublishButton } from '../components/PublishButton'
 import { newId } from '../store/briefing'
 
 export function RecapsView({
@@ -8,11 +9,15 @@ export function RecapsView({
   onAdd,
   onUpdate,
   onRemove,
+  canPublish,
+  onPublish,
 }: {
   recaps: Recap[]
   onAdd: (r: Recap) => void
   onUpdate: (id: string, patch: Partial<Recap>) => void
   onRemove: (id: string) => void
+  canPublish?: boolean
+  onPublish?: () => Promise<{ ok: boolean; error?: string }>
 }) {
   const [title, setTitle] = useState('')
   const [session, setSession] = useState('')
@@ -43,7 +48,10 @@ export function RecapsView({
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Data" style={{ flex: 1 }} />
         </div>
         <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={3} placeholder="O que aconteceu na sessão…" />
-        <button onClick={add} disabled={!title.trim() || !body.trim()}>+ crônica</button>
+        <div className="row">
+          <button onClick={add} disabled={!title.trim() || !body.trim()}>+ crônica</button>
+          {canPublish && onPublish && <PublishButton onPublish={onPublish} />}
+        </div>
       </div>
 
       {recaps.length === 0 ? (

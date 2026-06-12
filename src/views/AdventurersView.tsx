@@ -14,6 +14,7 @@ export function AdventurersView({
   onAddParty,
   onRenameParty,
   onRemoveParty,
+  onSync,
 }: {
   party: BriefingCharacter[]
   parties: Party[]
@@ -24,8 +25,33 @@ export function AdventurersView({
   onAddParty: (name: string) => void
   onRenameParty: (id: string, name: string) => void
   onRemoveParty: (id: string) => void
+  /** Re-busca os personagens do D&D Beyond (HP, nível…). */
+  onSync?: () => Promise<{ updated: number; failed: string[] }>
 }) {
   const [newParty, setNewParty] = useState('')
+  const [syncing, setSyncing] = useState(false)
+  const [syncMsg, setSyncMsg] = useState('')
+  const ddbCount = party.filter((c) => c.source === 'ddb').length
+
+  const doSync = async () => {
+    if (!onSync || syncing) return
+    setSyncing(true)
+    setSyncMsg('')
+    try {
+      const { updated, failed } = await onSync()
+      setSyncMsg(
+        failed.length
+          ? `${updated} atualizado(s) · falhou: ${failed.join(', ')}`
+          : updated
+            ? `${updated} personagem(ns) atualizado(s) do D&D Beyond.`
+            : 'Nenhum personagem do D&D Beyond para atualizar.',
+      )
+    } catch {
+      setSyncMsg('Erro ao sincronizar com o D&D Beyond.')
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const addParty = () => {
     if (!newParty.trim()) return
@@ -55,6 +81,15 @@ export function AdventurersView({
         <ImportPanel onImport={onImport} />
         <ManualAddForm onAdd={onAdd} />
       </div>
+
+      {onSync && ddbCount > 0 && (
+        <div className="sync-bar">
+          <button onClick={doSync} disabled={syncing} title="Re-buscar HP, nível, etc. do D&D Beyond">
+            {syncing ? 'sincronizando…' : '↻ sincronizar com o D&D Beyond'}
+          </button>
+          {syncMsg && <span className="muted">{syncMsg}</span>}
+        </div>
+      )}
 
       <div className="parties-bar">
         <span className="parties-bar__label">Equipes:</span>

@@ -30,6 +30,8 @@ export interface BriefingCharacter {
   notes?: string
   /** De onde veio: import do DDB ou entrada manual. */
   source: 'ddb' | 'manual'
+  /** ID do personagem no D&D Beyond (usado para re-sincronizar a ficha). */
+  ddbId?: string
 }
 
 export const ABILITY_ORDER: AbilityKey[] = ['str', 'dex', 'con', 'int', 'wis', 'cha']

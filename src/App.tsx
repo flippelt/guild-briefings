@@ -103,13 +103,14 @@ export function App() {
           <AdventurersView
             party={briefing.party}
             parties={briefing.parties}
-            onImport={b.addCharacter}
+            onImport={b.importCharacter}
             onAdd={b.addCharacter}
             onUpdate={b.updateCharacter}
             onRemove={b.removeCharacter}
             onAddParty={b.addParty}
             onRenameParty={b.renameParty}
             onRemoveParty={b.removeParty}
+            onSync={b.syncDdb}
           />
         )}
         {tab === 'quests' && (
@@ -121,10 +122,12 @@ export function App() {
             onAdd={b.addQuest}
             onUpdate={b.updateQuest}
             onRemove={b.removeQuest}
+            canPublish={b.canPublish}
+            onPublish={b.publish}
           />
         )}
         {tab === 'recaps' && (
-          <RecapsView recaps={briefing.recaps} onAdd={b.addRecap} onUpdate={b.updateRecap} onRemove={b.removeRecap} />
+          <RecapsView recaps={briefing.recaps} onAdd={b.addRecap} onUpdate={b.updateRecap} onRemove={b.removeRecap} canPublish={b.canPublish} onPublish={b.publish} />
         )}
       </main>
 

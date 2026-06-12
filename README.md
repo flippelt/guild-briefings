@@ -71,6 +71,31 @@ npm run build    # build de produção (tsc + vite)
 npm run test     # vitest
 ```
 
+## Publicação na mesa (Netlify, opcional)
+
+O app é estático: cada aparelho guarda seu estado no `localStorage` e o seed vem
+do `briefing.json`. O auto-refresh **mescla** (não apaga) — adições locais ainda
+não publicadas são preservadas.
+
+Para publicar **de um aparelho para todos** (deploy no Netlify), há um backend
+opcional em `netlify/functions/` usando **Netlify Blobs**:
+
+- `GET /api/briefing` — devolve o briefing publicado (cai pro estático se vazio).
+- `POST /api/publish` — guarda o briefing (header `x-publish-key`).
+
+No painel do Netlify, defina:
+
+| Variável | Onde | Valor |
+| --- | --- | --- |
+| `VITE_BRIEFING_URL` | build | `/api/briefing` |
+| `VITE_PUBLISH_URL` | build | `/api/publish` |
+| `PUBLISH_KEY` | runtime (secreta) | uma senha à sua escolha |
+
+Com isso aparecem o botão **Publicar** (abas Quests/Crônicas) e o **sincronizar
+com o D&D Beyond** (aba Aventureiros), e importar jogador **auto-publica** (pede
+a senha na 1ª vez). Sem essas variáveis (ex.: GitHub Pages), o app fica
+só-leitura do estático — sem regressão.
+
 ## Licença
 
 Código sob **MIT** (ver [LICENSE](LICENSE)). As fontes em `public/fonts/` são de

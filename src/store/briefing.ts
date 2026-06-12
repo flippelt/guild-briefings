@@ -1,12 +1,22 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Briefing, BriefingCharacter, GuildOverride, Party, Quest, Recap } from '../types'
 import { EMPTY_BRIEFING } from '../types'
+import { fetchDdbCharacter } from '../ddb/fetchDdb'
 
 const KEY = 'guild.briefing.v2'
 
 /** Modo demonstração (ativado no build do GitHub Pages via VITE_DEMO): nada é
  *  salvo e a party demo recarrega a cada acesso. */
 export const DEMO_MODE = import.meta.env.VITE_DEMO === 'true'
+
+// Fonte do seed e publicação. No GitHub Pages (público) ficam só o estático e
+// sem publicar; na mesa (Netlify) define-se VITE_BRIEFING_URL=/api/briefing e
+// VITE_PUBLISH_URL=/api/publish (ver netlify.toml).
+const STATIC_BRIEFING_URL = `${import.meta.env.BASE_URL}briefing.json`
+const BRIEFING_SRC = (import.meta.env.VITE_BRIEFING_URL as string | undefined) || STATIC_BRIEFING_URL
+const PUBLISH_URL = import.meta.env.VITE_PUBLISH_URL as string | undefined
+export const CAN_PUBLISH = !!PUBLISH_URL
+const PUBLISH_KEY_STORE = 'guild.publishKey'
 
 export const newId = (): string => {
   const c = (globalThis as { crypto?: { randomUUID?: () => string } }).crypto
@@ -143,6 +153,24 @@ function mergeBriefing(cur: Briefing, seed: Briefing): Briefing {
   }
 }
 
+/** Busca o seed publicado: tenta a fonte ao vivo (função da mesa) e cai pro
+ *  briefing.json estático do deploy. */
+async function fetchSeedJson(): Promise<unknown | null> {
+  const urls = BRIEFING_SRC === STATIC_BRIEFING_URL ? [STATIC_BRIEFING_URL] : [BRIEFING_SRC, STATIC_BRIEFING_URL]
+  for (const u of urls) {
+    try {
+      const r = await fetch(u, { cache: 'no-store' })
+      if (!r.ok) continue
+      const text = await r.text()
+      if (!text.trim()) continue
+      return JSON.parse(text)
+    } catch {
+      /* tenta o próximo */
+    }
+  }
+  return null
+}
+
 function load(): Briefing {
   try {
     const raw = localStorage.getItem(KEY)
@@ -173,8 +201,7 @@ export function useBriefing() {
   // No modo demo, o estado começa vazio → sempre adota o briefing.json.
   useEffect(() => {
     let cancelled = false
-    fetch(`${import.meta.env.BASE_URL}briefing.json`)
-      .then((r) => (r.ok ? r.json() : null))
+    fetchSeedJson()
       .then((data) => {
         if (cancelled || data == null) return
         const seed = normalizeBriefing(data)
@@ -197,8 +224,94 @@ export function useBriefing() {
 
   const patch = useCallback((p: Partial<Briefing>) => setBriefing((b) => ({ ...b, ...p })), [])
 
+  // --- Publicação na mesa (backend opcional) + sync de personagens ---
+  const briefingRef = useRef(briefing)
+  briefingRef.current = briefing
+  const autoPublishRef = useRef(false)
+
+  const postPublish = useCallback(
+    async (b: Briefing, opts?: { silent?: boolean }): Promise<{ ok: boolean; error?: string }> => {
+      if (!PUBLISH_URL) return { ok: false, error: 'Publicação não configurada.' }
+      let key = localStorage.getItem(PUBLISH_KEY_STORE) || ''
+      if (!key) {
+        if (opts?.silent) return { ok: false, error: 'sem senha salva' }
+        key = (prompt('Senha de publicação da mesa:') || '').trim()
+        if (!key) return { ok: false, error: 'cancelado' }
+      }
+      const version = Date.now()
+      try {
+        const r = await fetch(PUBLISH_URL, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-publish-key': key },
+          body: JSON.stringify({ ...b, version }),
+        })
+        if (r.status === 403) {
+          localStorage.removeItem(PUBLISH_KEY_STORE)
+          return { ok: false, error: 'Senha incorreta.' }
+        }
+        if (!r.ok) return { ok: false, error: `Falha ao publicar (${r.status}).` }
+        localStorage.setItem(PUBLISH_KEY_STORE, key)
+        setBriefing((cur) => ({ ...cur, version }))
+        return { ok: true }
+      } catch {
+        return { ok: false, error: 'Sem conexão com o servidor de publicação.' }
+      }
+    },
+    [],
+  )
+
+  // Após import/sync, publica em silêncio (só se já houver senha salva).
+  useEffect(() => {
+    if (!autoPublishRef.current) return
+    autoPublishRef.current = false
+    if (CAN_PUBLISH) void postPublish(briefing, { silent: true })
+  }, [briefing, postPublish])
+
   return {
     briefing,
+    canPublish: CAN_PUBLISH,
+    /** Publica o estado atual pra todos os aparelhos (pede senha na 1ª vez). */
+    publish: useCallback(() => postPublish(briefingRef.current), [postPublish]),
+    /** Importa um personagem (atualiza se já existir o mesmo ddbId) e auto-publica. */
+    importCharacter: useCallback((c: BriefingCharacter) => {
+      setBriefing((b) => {
+        const exists = c.ddbId ? b.party.some((x) => x.ddbId === c.ddbId) : false
+        if (exists) {
+          const party = b.party.map((x) =>
+            x.ddbId === c.ddbId ? { ...c, id: x.id, partyId: x.partyId, notes: x.notes ?? c.notes } : x,
+          )
+          return { ...b, party }
+        }
+        return { ...b, party: [...b.party, c] }
+      })
+      autoPublishRef.current = true
+    }, []),
+    /** Re-busca os personagens do D&D Beyond (HP, nível…) e auto-publica. */
+    syncDdb: useCallback(async (): Promise<{ updated: number; failed: string[] }> => {
+      const cur = briefingRef.current
+      const ddbIdOf = (c: BriefingCharacter) => c.ddbId || (c.id.startsWith('ddb-') ? c.id.slice(4) : '')
+      const targets = cur.party.filter((c) => c.source === 'ddb' && ddbIdOf(c))
+      const fresh: Record<string, BriefingCharacter> = {}
+      const failed: string[] = []
+      for (const c of targets) {
+        try {
+          fresh[c.id] = await fetchDdbCharacter(ddbIdOf(c))
+        } catch {
+          failed.push(c.name)
+        }
+      }
+      const updated = Object.keys(fresh).length
+      if (updated) {
+        const party = cur.party.map((x) => {
+          const f = fresh[x.id]
+          return f ? { ...f, id: x.id, partyId: x.partyId, notes: x.notes ?? f.notes } : x
+        })
+        const next: Briefing = { ...cur, party }
+        setBriefing(next)
+        if (CAN_PUBLISH) await postPublish(next, { silent: true })
+      }
+      return { updated, failed }
+    }, [postPublish]),
     setGuildName: useCallback((name: string) => patch({ guildName: name || undefined }), [patch]),
 
     addCharacter: useCallback((c: BriefingCharacter) => setBriefing((b) => ({ ...b, party: [...b.party, c] })), []),

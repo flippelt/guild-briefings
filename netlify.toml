@@ -1,0 +1,15 @@
+# Usado pelo deploy da MESA no Netlify (o público vai pro GitHub Pages e ignora
+# este arquivo). As funções em netlify/functions/ expõem /api/briefing (GET) e
+# /api/publish (POST) via Netlify Blobs.
+#
+# No painel do Netlify da mesa, defina:
+#   - PUBLISH_KEY  = <senha secreta>            (runtime — habilita publicar)
+#   - VITE_BRIEFING_URL = /api/briefing         (build — lê o publicado ao vivo)
+#   - VITE_PUBLISH_URL  = /api/publish          (build — habilita o botão Publicar)
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  node_bundler = "esbuild"
