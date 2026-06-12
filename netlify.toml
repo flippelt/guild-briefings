@@ -3,9 +3,9 @@
 # /api/publish (POST) via Netlify Blobs.
 #
 # No painel do Netlify da mesa, defina:
-#   - PUBLISH_KEY  = <senha secreta>            (runtime — habilita publicar)
-#   - VITE_BRIEFING_URL = /api/briefing         (build — lê o publicado ao vivo)
-#   - VITE_PUBLISH_URL  = /api/publish          (build — habilita o botão Publicar)
+#   - PUBLISH_KEY  = <senha secreta>            (runtime — autoriza publicar)
+#   - VITE_BRIEFING_URL = /api/briefing         (build — lê o publicado ao vivo + polling)
+#   - VITE_PUBLISH_URL  = /api/publish          (build — liga a publicação automática)
 
 [build]
   command = "npm run build"

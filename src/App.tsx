@@ -122,12 +122,10 @@ export function App() {
             onAdd={b.addQuest}
             onUpdate={b.updateQuest}
             onRemove={b.removeQuest}
-            canPublish={b.canPublish}
-            onPublish={b.publish}
           />
         )}
         {tab === 'recaps' && (
-          <RecapsView recaps={briefing.recaps} onAdd={b.addRecap} onUpdate={b.updateRecap} onRemove={b.removeRecap} canPublish={b.canPublish} onPublish={b.publish} />
+          <RecapsView recaps={briefing.recaps} onAdd={b.addRecap} onUpdate={b.updateRecap} onRemove={b.removeRecap} />
         )}
       </main>
 
