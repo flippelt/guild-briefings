@@ -11,5 +11,6 @@
   command = "npm run build"
   publish = "dist"
 
-[functions]
-  node_bundler = "esbuild"
+# Sem [functions]: o bundler padrão do Netlify lida com @netlify/blobs (forçar
+# esbuild quebra o empacotamento). As funções em netlify/functions/ são
+# detectadas automaticamente.

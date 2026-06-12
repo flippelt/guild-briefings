@@ -1,9 +1,5 @@
 // POST /api/publish — guarda o briefing publicado (Netlify Blobs).
-// Protegido por uma senha simples no header `x-publish-key`, conferida com a
-// env PUBLISH_KEY (definida no painel do Netlify). Sem PUBLISH_KEY, publica
-// fica desabilitado (503).
-import { getStore } from '@netlify/blobs'
-
+// Protegido por senha no header `x-publish-key` (conferida com PUBLISH_KEY).
 export default async (req) => {
   if (req.method !== 'POST') return new Response('Method Not Allowed', { status: 405 })
 
@@ -20,10 +16,12 @@ export default async (req) => {
   }
 
   try {
+    const { getStore } = await import('@netlify/blobs')
     const store = getStore('guild')
     await store.set('briefing', body)
   } catch (e) {
-    return new Response('store error', { status: 500 })
+    // surfaça o erro real do store pra diagnóstico
+    return new Response('store error: ' + (e && e.message ? e.message : String(e)), { status: 500 })
   }
   return new Response(JSON.stringify({ ok: true }), {
     headers: { 'content-type': 'application/json' },
