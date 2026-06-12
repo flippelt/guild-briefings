@@ -115,6 +115,8 @@ export const QUEST_STATUSES: QuestStatus[] = ['ativa', 'pausada', 'parcial', 'co
 export interface Recap {
   id: string
   title: string
+  /** Autor da crônica — personagem/jogador que escreveu (assinatura). */
+  author?: string
   /** Sessão (texto livre: "Sessão 12", "Arco da Hidra"…). */
   session?: string
   /** Data do calendário, ISO `YYYY-MM-DD` (seletor de data). */

@@ -102,6 +102,7 @@ export function normalizeBriefing(data: unknown): Briefing {
           id: typeof r.id === 'string' && r.id ? r.id : newId(),
           title: typeof r.title === 'string' ? r.title : 'Crônica',
           body: typeof r.body === 'string' ? r.body : '',
+          ...(typeof r.author === 'string' && r.author.trim() ? { author: r.author.trim() } : {}),
           ...(session ? { session } : {}),
           ...(date ? { date } : {}),
         }
