@@ -113,6 +113,36 @@ export function normalizeBriefing(data: unknown): Briefing {
   }
 }
 
+/** Mescla por chave: o publicado prevalece nos ids em comum; itens só-locais
+ *  (ainda não publicados) são preservados; novos do publicado entram. */
+function mergeById<T>(local: T[], seed: T[], key: (x: T) => string): T[] {
+  const seedMap = new Map(seed.map((i) => [key(i), i]))
+  const used = new Set<string>()
+  const out: T[] = local.map((li) => {
+    const k = key(li)
+    if (seedMap.has(k)) { used.add(k); return seedMap.get(k) as T }
+    return li
+  })
+  for (const si of seed) if (!used.has(key(si))) out.push(si)
+  return out
+}
+
+/** Adota o conteúdo publicado SEM apagar adições locais ainda não publicadas
+ *  (evita perder quests/crônicas/personagens criados no aparelho). */
+function mergeBriefing(cur: Briefing, seed: Briefing): Briefing {
+  return {
+    ...seed,
+    party: mergeById(cur.party, seed.party, (c) => c.id),
+    parties: mergeById(cur.parties, seed.parties, (p) => p.id),
+    quests: mergeById(cur.quests, seed.quests, (q) => q.id),
+    recaps: mergeById(cur.recaps, seed.recaps, (r) => r.id),
+    ...((cur.guilds?.length || seed.guilds?.length)
+      ? { guilds: mergeById(cur.guilds ?? [], seed.guilds ?? [], (g) => g.name) }
+      : {}),
+    version: seed.version,
+  }
+}
+
 function load(): Briefing {
   try {
     const raw = localStorage.getItem(KEY)
@@ -152,8 +182,11 @@ export function useBriefing() {
         if (!hasContent) return
         setBriefing((cur) => {
           const curEmpty = !(cur.party.length || cur.quests.length || cur.recaps.length)
+          if (curEmpty) return seed
           const newer = (seed.version ?? 0) > (cur.version ?? 0)
-          return curEmpty || newer ? seed : cur
+          // Mescla em vez de substituir: traz as novidades publicadas mas
+          // preserva o que foi adicionado localmente e ainda não publicado.
+          return newer ? mergeBriefing(cur, seed) : cur
         })
       })
       .catch(() => {})
