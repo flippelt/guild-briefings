@@ -1,5 +1,7 @@
 # Guild Briefings
 
+[![Last commit](https://img.shields.io/github/last-commit/flippelt/guild-briefings)](https://github.com/flippelt/guild-briefings/commits)
+
 Briefings de party estilizados para RPGs de **fantasia** — um dossiê diegético
 da companhia de aventureiros, pra mostrar aos jogadores na mesa (tablet/TV).
 PWA, React + Vite.
