@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Briefing, BriefingCharacter, GuildOverride, Party, Quest, Recap } from '../types'
-import { EMPTY_BRIEFING } from '../types'
+import { EMPTY_BRIEFING, guildKey } from '../types'
 import { fetchDdbCharacter } from '../ddb/fetchDdb'
 
 const KEY = 'guild.briefing.v2'
@@ -148,7 +148,7 @@ function mergeBriefing(cur: Briefing, seed: Briefing): Briefing {
     quests: mergeById(cur.quests, seed.quests, (q) => q.id),
     recaps: mergeById(cur.recaps, seed.recaps, (r) => r.id),
     ...((cur.guilds?.length || seed.guilds?.length)
-      ? { guilds: mergeById(cur.guilds ?? [], seed.guilds ?? [], (g) => g.name) }
+      ? { guilds: mergeById(cur.guilds ?? [], seed.guilds ?? [], guildKey) }
       : {}),
     version: seed.version,
   }
