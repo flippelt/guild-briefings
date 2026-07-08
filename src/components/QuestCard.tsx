@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { BriefingCharacter, GuildOverride, Party, Quest, QuestStatus } from '../types'
-import { QUEST_STATUS_LABEL, QUEST_STATUSES, questAssignee } from '../types'
+import { QUEST_STATUS_LABEL, QUEST_STATUSES, guildKey, questAssignee } from '../types'
 import { GUILDS } from '../guilds'
 
 export function QuestCard({
@@ -65,20 +65,20 @@ export function QuestCard({
         <label className="field">
           <span>Guilda emissora (assina/sela o contrato)</span>
           <select
-            value={q.guild?.name ?? ''}
+            value={q.guild ? guildKey(q.guild) : ''}
             onChange={(e) => {
-              const name = e.target.value
-              if (!name) return onUpdate({ guild: undefined })
-              const g = allGuilds.find((x) => x.name === name)
+              const key = e.target.value
+              if (!key) return onUpdate({ guild: undefined })
+              const g = allGuilds.find((x) => guildKey(x) === key)
               if (g) onUpdate({ guild: { ...g } })
             }}
           >
             <option value="">(automática — escolhida pelo id)</option>
-            {q.guild && !allGuilds.some((g) => g.name === q.guild!.name) && (
-              <option value={q.guild.name}>{q.guild.name} — {q.guild.signer} (personalizada)</option>
+            {q.guild && !allGuilds.some((g) => guildKey(g) === guildKey(q.guild!)) && (
+              <option value={guildKey(q.guild)}>{q.guild.name} — {q.guild.signer} (personalizada)</option>
             )}
             {allGuilds.map((g) => (
-              <option key={g.name} value={g.name}>{g.name} — {g.signer}</option>
+              <option key={guildKey(g)} value={guildKey(g)}>{g.name} — {g.signer}</option>
             ))}
           </select>
         </label>

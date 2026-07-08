@@ -83,6 +83,13 @@ export interface GuildOverride {
   variant?: number
 }
 
+/** Identidade de uma guilda emissora: nome + assinante. Duas guildas podem
+ *  compartilhar o mesmo nome (ex.: mesmo local, emissários diferentes ao longo
+ *  da campanha), então o nome sozinho não distingue quest givers. */
+export function guildKey(g: Pick<GuildOverride, 'name' | 'signer'>): string {
+  return `${g.name} ${g.signer}`
+}
+
 export interface Quest {
   id: string
   title: string
