@@ -24,6 +24,10 @@ export function WantedPoster({
   return (
     <>
       <button className="poster" onClick={() => setOpen(true)} title="Abrir história">
+        <span className="poster__nail poster__nail--tl" aria-hidden="true" />
+        <span className="poster__nail poster__nail--tr" aria-hidden="true" />
+        <span className="poster__nail poster__nail--bl" aria-hidden="true" />
+        <span className="poster__nail poster__nail--br" aria-hidden="true" />
         <span className="poster__name">{c.name}</span>
         <span className="poster__rule" />
         <span className="poster__frame">

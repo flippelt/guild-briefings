@@ -52,7 +52,9 @@ export function App() {
   return (
     <div className="app">
       <div className="bg" aria-hidden="true">
+        <span className="bg__wood" />
         <span className="bg__glow" />
+        <span className="bg__vignette" />
         <span className="bg__embers" />
         <span className="bg__grain" />
       </div>
@@ -62,7 +64,9 @@ export function App() {
           {briefing.crest === 'd20' ? <D20Icon /> : '⚜'}
         </div>
         <div className="masthead__id">
+          <p className="masthead__flourish" aria-hidden="true">✦ ——— ❦ ——— ✦</p>
           <h1 className="masthead__title">{briefing.guildName || 'Companhia Errante'}</h1>
+          <p className="masthead__flourish" aria-hidden="true">✦ ——— ❦ ——— ✦</p>
           {DEMO_MODE ? (
             <span className="masthead__demo" title="Demonstração — nada é salvo; reseta a cada acesso">
               demonstração · nada é salvo

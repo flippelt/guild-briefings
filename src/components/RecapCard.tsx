@@ -39,6 +39,7 @@ export function RecapCard({
 
   return (
     <article className="recap">
+      <span className="recap__bind" aria-hidden="true" />
       <div className="recap__head">
         <h3 className="recap__title">{r.title}</h3>
         {(r.session || r.date) && (
