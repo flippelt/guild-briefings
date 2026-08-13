@@ -11,6 +11,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,jpg,jpeg,woff,woff2,otf,ttf,webmanifest}'],
+      },
       manifest: {
         name: 'Guild Briefings',
         short_name: 'Guild',

@@ -17,6 +17,10 @@ export function StatusView({ briefing }: { briefing: Briefing }) {
   return (
     <div className="view">
       <div className="board">
+        <span className="board__iron board__iron--tl" aria-hidden="true" />
+        <span className="board__iron board__iron--tr" aria-hidden="true" />
+        <span className="board__iron board__iron--bl" aria-hidden="true" />
+        <span className="board__iron board__iron--br" aria-hidden="true" />
         {quests.length === 0 ? (
           <p className="board__empty">O quadro está vazio. Pregue uma quest na aba Quests.</p>
         ) : (
