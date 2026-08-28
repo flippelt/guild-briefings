@@ -19,6 +19,10 @@ projeto próprio (do zero) e voltado a D&D 5e e afins.
 Página de demonstração no GitHub Pages:
 **https://flippelt.github.io/guild-briefings/**
 
+## Screenshots
+
+![Quadro de quests da demo](docs/screenshots/briefing-overview.png)
+
 A demo roda em **modo efêmero** (build com `VITE_DEMO=true`): a party fictícia
 recarrega a cada acesso e **nada é salvo** — pode mexer à vontade.
 
