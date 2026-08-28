@@ -98,6 +98,15 @@ com o D&D Beyond** (aba Aventureiros), e importar jogador **auto-publica** (pede
 a senha na 1ª vez). Sem essas variáveis (ex.: GitHub Pages), o app fica
 só-leitura do estático — sem regressão.
 
+## Família
+
+| Projeto | Papel |
+|---|---|
+| [Campaign Codex](https://github.com/flippelt/campaign-codex) | wiki da campanha · [demo](https://flippelt.github.io/campaign-codex/) |
+| [session-kit](https://github.com/flippelt/session-kit) | YAML → `briefing.json` |
+| [GM Control Room](https://github.com/flippelt/gm-control-room) | painel do mestre |
+| [rpg-prop-kit](https://www.npmjs.com/package/rpg-prop-kit) | pergaminho, lacre, CRT |
+
 ## Licença
 
 Código sob **MIT** (ver [LICENSE](LICENSE)). As fontes em `public/fonts/` são de
