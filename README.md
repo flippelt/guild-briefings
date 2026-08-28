@@ -21,7 +21,9 @@ Página de demonstração no GitHub Pages:
 
 ## Screenshots
 
-![Quadro de quests da demo](docs/screenshots/briefing-overview.png)
+Clique para ver em 1080p.
+
+[<img src="docs/screenshots/briefing-overview.png" width="720" alt="Quadro de quests da demo">](docs/screenshots/briefing-overview.png)
 
 A demo roda em **modo efêmero** (build com `VITE_DEMO=true`): a party fictícia
 recarrega a cada acesso e **nada é salvo** — pode mexer à vontade.
